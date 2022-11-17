@@ -1,9 +1,9 @@
-import { useRef } from 'react'
+import { useRef, Suspense } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame, useThree,extend } from '@react-three/fiber'
 import { WaveMaterial } from './WaveMaterial'
 import { LavaMaterial } from './LavaMaterial'
-import { useTexture, shaderMaterial, OrbitControls, Stats, Sparkles } from "@react-three/drei"
+import { useTexture, shaderMaterial, OrbitControls, Stats,Stars, Sparkles,Sky, Cloud ,Stage} from "@react-three/drei"
 import { EffectComposer, Bloom, GodRays,Scanline, ChromaticAberration, ColorDepth } from "@react-three/postprocessing";
 import { BlurPass,BlendFunction } from "postprocessing";
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass'
@@ -83,7 +83,7 @@ function Lava() {
           fogDensity={0.05 }
           />
       </mesh>
-      <Sparkles ref={sparkleRef} scale={25} size={10} color="orange" count={50} />
+      <Sparkles noise={1}ref={sparkleRef} scale={25} size={10} color="orange" count={50} />
     </>
   )
 }
@@ -93,16 +93,45 @@ export default function App() {
     <div style={{padding: '5px', backgroundColor: 'gray',     height: '100%'}}>
       <Canvas 
         camera={{ position: [-20, 20, 20] }}>
+
+      
           <color attach={"background"} args={["black"]} />
           <fog attach="fog" args={["white", 1, 15]} />
           <pointLight position={[-5, 5, 5]} />
         <Lava />
-        
-        
+      
+        <Stars />
+   
+        <Effects />
         <OrbitControls />
         
       </Canvas>
     </div>
   )
 }
+//
 //<Stats />
+
+/*  <Sky
+        distance={300000}
+        turbidity={6.6}
+        rayleigh={1.1}
+        mieCoefficient={0.005}
+        mieDirectionalG={ 0.8}
+        inclination={0.49}
+        azimuth={0.25}
+      />
+<Stage
+        contactShadow={ {blur: 2, opacity: 0.5,position: [0, 0, 0]}}
+        shadows={false}
+        intensity={1}
+        environment="night"
+      >
+      </Stage>
+  <Cloud position={[-4, -2, 0]} args={[3, 2]} />
+
+      <Cloud opacity={0.5} color='yellow' position={[-4, 2, 0]} args={[3, 2]} />
+      <Cloud opacity={0.5} color='yellow' args={[3, 2]} />
+      <Cloud opacity={0.5} color='yellow' position={[4, -2, 0]} args={[3, 2]} />
+      <Cloud opacity={0.5} color='yellow' position={[4, 2, 0]} args={[3, 2]} />
+*/
