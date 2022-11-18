@@ -26,17 +26,17 @@ function Effects() {
   return (
     <>
       <EffectComposer>
+       
+        
+        <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
+        
+        <ColorDepth blendFunction={BlendFunction.ALPHA} bits={16}  />
         <Bloom attachArray="passes"
           intensity={5}
           luminanceThreshold={0.1}
           luminanceSmoothing={0.5}
           blurPass={new BlurPass()}
         />
-        
-        <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
-        
-        <ColorDepth blendFunction={BlendFunction.ALPHA} bits={16}  />
-       
       </EffectComposer>
     </>
   );
@@ -78,7 +78,7 @@ function Lava() {
           ref={shaderRef}
           fogColor={'black'}
           texture1={texture1}
-          uvScale ={new THREE.Vector2( 3.0, 1.0 )}
+          uvScale ={[3.0,2.0]}
           texture2={texture2}
           key={LavaMaterial.key}
           toneMapped={true}

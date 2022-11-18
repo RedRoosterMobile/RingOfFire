@@ -11,14 +11,15 @@ const LavaMaterial = shaderMaterial(
     fogDensity: 0.69,
     texture1: undefined,
     texture2: undefined,
+    uvScale: new THREE.Vector2( 3.0, 1.0 )
   },
   glsl`
-      //uniform vec2 uvScale;
+      uniform vec2 uvScale;
       varying vec2 vUv;
       
       void main()
       {
-        vUv = vec2(3.,1.) * uv;
+        vUv = uvScale * uv;
         vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
         gl_Position = projectionMatrix * mvPosition;
       }
