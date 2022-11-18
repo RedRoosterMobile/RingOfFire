@@ -24,6 +24,7 @@ const LavaMaterial = shaderMaterial(
         gl_Position = projectionMatrix * mvPosition;
       }
   `,
+  // for more heat distortion https://www.shadertoy.com/view/XsVSRd
   glsl`
       // https://threejs.org/examples/webgl_shader_lava.html
       uniform float time;
