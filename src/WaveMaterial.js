@@ -1,7 +1,7 @@
-import * as THREE from 'three'
-import { extend } from '@react-three/fiber'
-import { shaderMaterial } from '@react-three/drei'
-import glsl from 'babel-plugin-glsl/macro'
+import * as THREE from 'three';
+import { extend } from '@react-three/fiber';
+import { shaderMaterial } from '@react-three/drei';
+import glsl from 'babel-plugin-glsl/macro';
 
 // This shader is from Bruno Simons Threejs-Journey: https://threejs-journey.xyz
 const WaveMaterial = shaderMaterial(
@@ -40,8 +40,8 @@ const WaveMaterial = shaderMaterial(
         #include <tonemapping_fragment>
         #include <encodings_fragment>
       }`
-)
+);
 
-extend({ WaveMaterial })
+extend({ WaveMaterial });
 
-export { WaveMaterial }
+export { WaveMaterial };

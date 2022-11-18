@@ -15,6 +15,8 @@ import {
   Cloud,
   Stage,
   MeshWobbleMaterial,
+  MeshDistortMaterial,
+  Icosahedron
 } from '@react-three/drei';
 // https://pmndrs.github.io/postprocessing/public/docs/class/src/effects/VignetteEffect.js~VignetteEffect.html
 import {
@@ -23,6 +25,7 @@ import {
   GodRays,
   Scanline,
   Vignette,
+  Outline,
   ChromaticAberration,
   ColorDepth,
 } from '@react-three/postprocessing';
@@ -75,6 +78,24 @@ function BloomOld({ children }) {
     </>
   );
 }
+function Ikke() {
+  /*
+  speed={number('Speed', 1, { range: true, max: 10, step: 0.1 })}
+  distort={number('Distort', 0.6, { range: true, min: 0, max: 1, step: 0.1 })}
+  radius={number('Radius', 1, { range: true, min: 0, max: 1, step: 0.1 })}
+  */
+      return (
+        <Icosahedron args={[1, 4]}>
+          <MeshDistortMaterial
+            color="#f25042"
+            speed={ 1}
+            distort={0.6}
+            radius={ 1}
+          />
+        </Icosahedron>
+      )
+  
+}
 function Effects() {
   const { gl, scene, camera, size } = useThree();
   const composer = useRef();
@@ -105,6 +126,8 @@ function R3fEffects() {
           luminanceSmoothing={0.5}
           blurPass={new BlurPass()}
         />
+
+        <Outline blur={true} />
       </EffectComposer>
     </>
   );
@@ -189,28 +212,69 @@ function Torus2() {
 }
 function Sphere({ geometry, x, y, z, s }) {
   const ref = useRef();
+  // make em wobble https://tympanus.net/codrops/2021/01/26/twisted-colorful-spheres-with-three-js/
   useFrame((state) => {
-    ref.current.position.x =
-      x + Math.sin((state.clock.getElapsedTime() * s) / 2);
-    ref.current.position.y =
-      y + Math.sin((state.clock.getElapsedTime() * s) / 2);
-    ref.current.position.z =
-      z + Math.sin((state.clock.getElapsedTime() * s) / 2);
+    // dance
+    const dance = false;
+    if (dance) {
+      ref.current.position.x =
+        x + Math.sin((state.clock.getElapsedTime() * s) / 2);
+      ref.current.position.y =
+        y + Math.sin((state.clock.getElapsedTime() * s) / 2);
+      ref.current.position.z =
+        z + Math.sin((state.clock.getElapsedTime() * s) / 2);
+    }
   });
+
+  // speed: max 10
+  // distort: min: 0 max: 1
+  // radius: 0-1
+  // <meshStandardMaterial color={'red'} metalness={0.5} roughness={0} />
+  // JELLY:
+  // <MeshDistortMaterial color="orange" speed={5} distort={0.5} radius={0.9} />
+  // and dance= false
+  // and const [geometry] = useState(() => new THREE.TorusKnotGeometry(.11, .341, 64,64,0.5,0.5), []);
   return (
-    <mesh ref={ref} position={[x, y, z]} scale={[s, s, s]} geometry={geometry}>
-      <meshStandardMaterial color={'gold'} metalness={1} roughness={0} />
+    <mesh
+      color="orange"
+      ref={ref}
+      position={[x, y, z]}
+      scale={[s, s, s]}
+      geometry={geometry}
+    >
+      <MeshDistortMaterial
+        side={THREE.DoubleSide}
+        color="orange"
+        speed={5}
+        distort={0.5}
+        radius={0.9}
+      />
     </mesh>
   );
 }
 function RandomSpheres() {
   const [geometry] = useState(() => new THREE.SphereGeometry(0.1, 32, 32), []);
+  //const [geometry] = useState(() => new THREE.IcosahedronBufferGeometry(.1, 64), []);
+  /*
+  const [geometry] = useState(
+    () => new THREE.CapsuleGeometry(0.01, 1, 64, 64),
+    []
+  );
+  */
+  // kinda like a jellyfish. Somehow cut it off with bolean operation https://github.com/looeee/threejs-csg
+  // https://github.com/pmndrs/react-three-csg
+  /*const [geometry] = useState(
+    () => new THREE.TorusKnotGeometry(.11, .341, 64,64,0.5,0.5),
+    []
+  );*/
+  //const [geometry] = useState(() => new THREE.SphereGeometry(0.11,16,16, Math.PI/2,  Math.PI, 0, Math.PI), []);
+
   const data = useMemo(() => {
-    return new Array(15).fill().map((_, i) => ({
+    return new Array(2).fill().map((_, i) => ({
       x: Math.random() * 100 - 50,
       y: Math.random() * 100 - 50,
       z: Math.random() * 100 - 50,
-      s: Math.random() + 10,
+      s: Math.random() + 100,
     }));
   }, []);
   return data.map((props, i) => (
@@ -239,12 +303,25 @@ export default function App() {
         <Lava />
         <Torus2 />
         <Stars />
-
+        <Ikke/>
         <OrbitControls />
+        <R3fEffects />
       </Canvas>
     </div>
   );
 }
+
+/*
+    radius?: number;
+    depth?: number;
+    count?: number;
+    factor?: number;
+    saturation?: number;
+    fade?: boolean;
+    speed?: number;
+*/
+// <R3fEffects />
+// <Lava />
 //<Effects />
 //<Stats />
 //<Lava />
