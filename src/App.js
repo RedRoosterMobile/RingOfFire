@@ -31,6 +31,7 @@ import {
 } from '@react-three/postprocessing';
 
 import { MyCustomEffect } from './MyCustomEffect';
+import { WaterEffect } from './WaterEffect';
 import { BlurPass, BlendFunction } from 'postprocessing';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
@@ -158,14 +159,11 @@ function R3fEffects() {
     //console.log(time);
     sinner=Math.sin(time)*0.5+0.5;
     param2=sinner;
-    //console.log(mceRef.current.uniforms, 'outer');
-    mceRef.current.uniforms.set('param2',{value: sinner});
-    //console.log(mceRef.current.uniforms.get('weights').value.x);
-    //mceRef.current.uniforms.get('weights').value.set('x',0);
-    //console.log(mceRef.current.uniforms.get('weights').value.x);
-    
-    //sparkleRef.current.rotation.y += 0.001;
+    mceRef.current.uniforms.set('param2',{value: param2});
+    // works
+    //mceRef.current.blendMode=BlendFunction.ALPHA;
   });
+
   return (
     <>
       <EffectComposer>
@@ -180,6 +178,7 @@ function R3fEffects() {
           blurPass={new BlurPass()}
         />
         <Outline blur={true} />
+        <WaterEffect />
       </EffectComposer>
     </>
   );
