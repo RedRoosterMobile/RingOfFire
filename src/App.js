@@ -147,24 +147,38 @@ function Effects() {
 
 function R3fEffects() {
   let mceRef = useRef();
-  let weights = [1.1,0.1,1.9];
+  let weights = [5.1,0.1,1.9];
   let blendFunction = BlendFunction.NORMAL;
   let param2 = 0.1;
+  let time=0;
+  let sinner=0;
+
   useFrame((state, delta) => {
-    //console.log(mceRef.current.uniforms);
-    weights= [weights[0]/2,weights[1],weights[2]];
-    if (weights[0] <=0) {
-      //console.log('switching function');
-      blendFunction = BlendFunction.COLOR_DODGE;
-      
-    }
-    param2+=1;
+    time+=delta;
+    //console.log(time);
+    sinner=Math.sin(time)*0.5+0.5;
+    param2=sinner;
+    //console.log(mceRef.current.uniforms, 'outer');
+    mceRef.current.uniforms.set('param2',{value: sinner});
+    //console.log(mceRef.current.uniforms.get('weights').value.x);
+    //mceRef.current.uniforms.get('weights').value.set('x',0);
+    //console.log(mceRef.current.uniforms.get('weights').value.x);
+    
     //sparkleRef.current.rotation.y += 0.001;
   });
   return (
     <>
       <EffectComposer>
         <MyCustomEffect ref={mceRef} weights={weights} param2={param2} blendFunction={blendFunction} />
+        <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
+        <ColorDepth blendFunction={BlendFunction.NORMAL} bits={16} />
+        <Bloom
+          attachArray="passes"
+          intensity={5}
+          luminanceThreshold={0.1}
+          luminanceSmoothing={0.5}
+          blurPass={new BlurPass()}
+        />
         <Outline blur={true} />
       </EffectComposer>
     </>
