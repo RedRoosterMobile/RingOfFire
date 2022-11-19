@@ -16,7 +16,7 @@ uniform sampler2D tex;
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
     //vec2 vUv = uv.xy;
     float factor=1.5;
-    vec2 uv1 = uv*2.;
+    vec2 uv1 = uv;
     float frequency = 6.0;
     float amplitude = 0.015 * factor;
     float x = uv1.y * frequency + time * .7;
