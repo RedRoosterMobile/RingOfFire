@@ -16,7 +16,7 @@ const LavaMaterial = shaderMaterial(
   glsl`
       uniform vec2 uvScale;
       varying vec2 vUv;
-      
+
       void main()
       {
         vUv = uvScale * uv;
@@ -86,6 +86,7 @@ const LavaMaterial = shaderMaterial(
           }
           return r;
       }
+      
       // not used?
       vec2 mainUv(vec2 uv, vec4 tex) {
         float angle = -((tex.r) * (PI* 2.) - PI);

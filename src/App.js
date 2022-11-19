@@ -16,7 +16,7 @@ import {
   Stage,
   MeshWobbleMaterial,
   MeshDistortMaterial,
-  Icosahedron
+  Icosahedron,
 } from '@react-three/drei';
 // https://pmndrs.github.io/postprocessing/public/docs/class/src/effects/VignetteEffect.js~VignetteEffect.html
 import {
@@ -29,6 +29,8 @@ import {
   ChromaticAberration,
   ColorDepth,
 } from '@react-three/postprocessing';
+
+import { MyCustomEffect } from './MyCustomEffect';
 import { BlurPass, BlendFunction } from 'postprocessing';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
@@ -78,23 +80,53 @@ function BloomOld({ children }) {
     </>
   );
 }
-function Ikke() {
+function Ikke({
+  x = 0,
+  y = 0,
+  z = 0,
+  s = 1,
+  radius = 1,
+  detail = 4,
+  dance = false,
+}) {
   /*
   speed={number('Speed', 1, { range: true, max: 10, step: 0.1 })}
   distort={number('Distort', 0.6, { range: true, min: 0, max: 1, step: 0.1 })}
   radius={number('Radius', 1, { range: true, min: 0, max: 1, step: 0.1 })}
   */
-      return (
-        <Icosahedron args={[1, 4]}>
-          <MeshDistortMaterial
-            color="#f25042"
-            speed={ 1}
-            distort={0.6}
-            radius={ 1}
-          />
-        </Icosahedron>
-      )
-  
+  // https://github.com/pmndrs/drei#meshwobblematerial
+  //https://github.com/pmndrs/drei#meshdistortmaterial
+  //https://github.com/pmndrs/drei#meshrefractionmaterial
+
+  const ref = useRef();
+  // make em wobble https://tympanus.net/codrops/2021/01/26/twisted-colorful-spheres-with-three-js/
+  useFrame((state) => {
+    // dance
+    //const dance = true;
+    if (dance) {
+      ref.current.position.x =
+        x + Math.sin((state.clock.getElapsedTime() * s) / 2);
+      ref.current.position.y =
+        y + Math.sin((state.clock.getElapsedTime() * s) / 2);
+      ref.current.position.z =
+        z + Math.sin((state.clock.getElapsedTime() * s) / 2);
+    }
+  });
+  return (
+    <Icosahedron
+      args={[radius, 4]}
+      position={[x, y, z]}
+      scale={[s, s, s]}
+      ref={ref}
+    >
+      <MeshDistortMaterial
+        color="#f25042"
+        speed={1}
+        distort={0.6}
+        radius={0.5}
+      />
+    </Icosahedron>
+  );
 }
 function Effects() {
   const { gl, scene, camera, size } = useThree();
@@ -114,10 +146,34 @@ function Effects() {
 }
 
 function R3fEffects() {
+  let mceRef = useRef();
+  let weights = [1.1,0.1,1.9];
+  let blendFunction = BlendFunction.NORMAL;
+  let param2 = 0.1;
+  useFrame((state, delta) => {
+    //console.log(mceRef.current.uniforms);
+    weights= [weights[0]/2,weights[1],weights[2]];
+    if (weights[0] <=0) {
+      //console.log('switching function');
+      blendFunction = BlendFunction.COLOR_DODGE;
+      
+    }
+    param2+=1;
+    //sparkleRef.current.rotation.y += 0.001;
+  });
   return (
     <>
       <EffectComposer>
-        <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
+        <MyCustomEffect ref={mceRef} weights={weights} param2={param2} blendFunction={blendFunction} />
+        <Outline blur={true} />
+      </EffectComposer>
+    </>
+  );
+}
+// <ColorDepth blendFunction={BlendFunction.ALPHA} bits={5.5}  />
+/*
+
+    <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
         <ColorDepth blendFunction={BlendFunction.ALPHA} bits={16} />
         <Bloom
           attachArray="passes"
@@ -127,13 +183,6 @@ function R3fEffects() {
           blurPass={new BlurPass()}
         />
 
-        <Outline blur={true} />
-      </EffectComposer>
-    </>
-  );
-}
-// <ColorDepth blendFunction={BlendFunction.ALPHA} bits={5.5}  />
-/*
 <Scanline attachArray="passes"
           density={0.2}
           blendFunction={BlendFunction.COLOR_BURN}
@@ -254,13 +303,6 @@ function Sphere({ geometry, x, y, z, s }) {
 }
 function RandomSpheres() {
   const [geometry] = useState(() => new THREE.SphereGeometry(0.1, 32, 32), []);
-  //const [geometry] = useState(() => new THREE.IcosahedronBufferGeometry(.1, 64), []);
-  /*
-  const [geometry] = useState(
-    () => new THREE.CapsuleGeometry(0.01, 1, 64, 64),
-    []
-  );
-  */
   // kinda like a jellyfish. Somehow cut it off with bolean operation https://github.com/looeee/threejs-csg
   // https://github.com/pmndrs/react-three-csg
   /*const [geometry] = useState(
@@ -269,17 +311,21 @@ function RandomSpheres() {
   );*/
   //const [geometry] = useState(() => new THREE.SphereGeometry(0.11,16,16, Math.PI/2,  Math.PI, 0, Math.PI), []);
 
+  // turnn then into a compound body
+  // https://codesandbox.io/s/r3f-ibl-envmap-simple-forked-hzlrej?file=/src/Scene.js:797-800
   const data = useMemo(() => {
-    return new Array(2).fill().map((_, i) => ({
+    return new Array(15).fill().map((_, i) => ({
       x: Math.random() * 100 - 50,
       y: Math.random() * 100 - 50,
       z: Math.random() * 100 - 50,
-      s: Math.random() + 100,
+      s: Math.random() * 10,
+      radius: Math.random() * 1,
+      detail: Math.random() * 4,
+      dance: true,
     }));
   }, []);
-  return data.map((props, i) => (
-    <Sphere key={i} {...props} geometry={geometry} />
-  ));
+  // <Sphere key={i} {...props} geometry={geometry} />
+  return data.map((props, i) => <Ikke key={i} {...props} />);
 }
 function Main({ children }) {
   const scene = useRef();
@@ -303,9 +349,9 @@ export default function App() {
         <Lava />
         <Torus2 />
         <Stars />
-        <Ikke/>
+        <Ikke x={0} y={0} z={0} s={1} radius={1} detail={4} dance={false} />
+        <R3fEffects/>
         <OrbitControls />
-        <R3fEffects />
       </Canvas>
     </div>
   );
