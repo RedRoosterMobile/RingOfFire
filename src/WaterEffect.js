@@ -14,7 +14,7 @@ uniform float time;
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
     //vec2 vUv = uv.xy;
-    float factor=1.0; // <-1.5
+    float factor=0.0; // <-1.5
     vec2 uv1 = uv;
     float frequency = 6.0;
     float amplitude = 0.015 * factor;

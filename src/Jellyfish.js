@@ -15,102 +15,53 @@ import {
 } from '@react-three/postprocessing';
 import { Jellyfish1 } from './Jellyfish1';
 import WaterEffects from './WaterEffects';
-import {
-  useTexture,
-  shaderMaterial,
-  OrbitControls,
-  Torus,
-  Stats,
-  Stars,
-  Sparkles,
-  Sky,
-  Cloud,
-  Stage,
-  MeshWobbleMaterial,
-  MeshDistortMaterial,
-  Icosahedron,
-  useAnimations,
-} from '@react-three/drei';
+import { useTexture, OrbitControls, Sparkles, Plane } from '@react-three/drei';
 import { WaterEffect } from './WaterEffect';
-// https://pmndrs.github.io/postprocessing/public/docs/class/src/effects/VignetteEffect.js~VignetteEffect.html
-/*import {
-  EffectComposer,
-  Bloom,
-  GodRays,
-  Scanline,
-  Vignette,
-  Outline,
-  ChromaticAberration,
-  ColorDepth,
-} from '@react-three/postprocessing';*/
-//import { BlurPass, BlendFunction } from 'postprocessing';
-//import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
-//import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-//extend({ FilmPass, UnrealBloomPass });
-
-//import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-//import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-//import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
-//extend({ OldEffectComposer, RenderPass, GlitchPass });
-/*
-function Ikke({
-  x = 0,
-  y = 0,
-  z = 0,
-  s = 1,
-  radius = 1,
-  detail = 4,
-  dance = false,
-}) {
-ps://github.com/pmndrs/drei#meshwobblematerial
-  //https://github.com/pmndrs/drei#meshdistortmaterial
-  //https://github.com/pmndrs/drei#meshrefractionmaterial
-
-  const ref = useRef();
-  // make em wobble https://tympanus.net/codrops/2021/01/26/twisted-colorful-spheres-with-three-js/
-  useFrame((state) => {
-    // dance
-    //const dance = true;
-    if (dance) {
-      ref.current.position.x =
-        x + Math.sin((state.clock.getElapsedTime() * s) / 2);
-      ref.current.position.y =
-        y + Math.sin((state.clock.getElapsedTime() * s) / 2);
-      ref.current.position.z =
-        z + Math.sin((state.clock.getElapsedTime() * s) / 2);
-    }
-  });
-  return (
-    <Icosahedron
-      args={[radius, 4]}
-      position={[x, y, z]}
-      scale={[s, s, s]}
-      ref={ref}
-    >
-      <MeshDistortMaterial
-        color="#f25042"
-        speed={1}
-        distort={0.6}
-        radius={0.5}
-      />
-    </Icosahedron>
-  );
-}*/
 
 function R3fEffects() {
   return (
     <EffectComposer>
-      <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
-      <WaterEffect />
       <Bloom
-          blendFunction={BlendFunction.ADD}
-          intensity={100}
-          luminanceThreshold={0.1}
-          luminanceSmoothing={1.3}
-        />
+        blendFunction={BlendFunction.ADD}
+        intensity={100}
+        luminanceThreshold={0.1}
+        luminanceSmoothing={1.3}
+      />
     </EffectComposer>
   );
 }
+const Terrain = () => {
+  //const height = useLoader(THREE.TextureLoader, "/textures/sea_floor/DisplacementMap.png");
+  //const normals = useLoader(THREE.TextureLoader, "/textures/sea_floor/NormalMap.png");
+  const [height, normals,colors] = useTexture([
+    '/textures/sea_floor/DisplacementMap.png',
+    '/textures/sea_floor/NormalMap.png',
+    '/textures/sea_floor/AmbientOcclusionMap.png',
+  ]);
+  // repeat textures mirrored
+  height.wrapS = height.wrapT = THREE.RepeatWrapping;
+  normals.wrapS = normals.wrapT = THREE.MirroredRepeatWrapping;
+
+
+  return (
+    <group>
+      <Plane
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -30, 0]}
+        args={[256, 256, 2096, 2096]}
+      >
+        <meshStandardMaterial
+          attach="material"
+          color="white"
+          map={colors}
+          metalness={0.2}
+          normalMap={normals}
+          displacementMap={height}
+        />
+      </Plane>
+    </group>
+  );
+};
 
 export default function Jellyfish() {
   return (
@@ -118,14 +69,28 @@ export default function Jellyfish() {
       dpr={[1, 2]}
       camera={{ fov: 100, position: [0, 0, 30] }}
       onCreated={({ gl }) => {
-        //gl.toneMapping = THREE.Uncharted2ToneMapping;
-        gl.setClearColor(new THREE.Color('#020207'));
+        console.log('dunno');
+        gl.toneMapping = THREE.ReinhardToneMapping;
+        // navy 000080
+        // midnigtblue 191970
+        gl.setClearColor(new THREE.Color('#191970'));
       }}
     >
-      <fog attach="fog" args={['white', 50, 190]} />
-      <pointLight distance={100} intensity={4} color="white" />
-      <Jellyfish1 />
-      <R3fEffects />
+      <Terrain />
+      <Sparkles
+        luminanceThreshold={1.01}
+        color={'#999'}
+        size={20}
+        count={60}
+        opacity={0.1}
+        noise={100}
+        scale={[10, 10, 10]}
+      />
+      <fog attach="fog" args={['#000030', 50, 190]} />
+      <pointLight distance={100} intensity={1} color="#87CEFA" />
+      <ambientLight color={'#87CEFA'} intensity={0.01}/>
+      <Jellyfish1 luminanceThreshold={0.1} />
+<R3fEffects/>
       <OrbitControls />
     </Canvas>
   );
