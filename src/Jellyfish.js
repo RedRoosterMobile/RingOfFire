@@ -2,6 +2,17 @@ import { useRef, Suspense, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 //import { LavaMaterial } from './LavaMaterial';
+import { BlurPass, BlendFunction } from 'postprocessing';
+import {
+  EffectComposer,
+  Bloom,
+  GodRays,
+  Scanline,
+  Vignette,
+  Outline,
+  ChromaticAberration,
+  ColorDepth,
+} from '@react-three/postprocessing';
 import { Jellyfish1 } from './Jellyfish1';
 import WaterEffects from './WaterEffects';
 import {
@@ -20,6 +31,7 @@ import {
   Icosahedron,
   useAnimations,
 } from '@react-three/drei';
+import { WaterEffect } from './WaterEffect';
 // https://pmndrs.github.io/postprocessing/public/docs/class/src/effects/VignetteEffect.js~VignetteEffect.html
 /*import {
   EffectComposer,
@@ -84,44 +96,38 @@ ps://github.com/pmndrs/drei#meshwobblematerial
     </Icosahedron>
   );
 }*/
-/*
+
 function R3fEffects() {
   return (
-    <>
-      <EffectComposer>
-        <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
-        <ColorDepth blendFunction={BlendFunction.ALPHA} bits={16} />
-        <Bloom
-          attachArray="passes"
-          intensity={5}
+    <EffectComposer>
+      <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
+      <WaterEffect />
+      <Bloom
+          blendFunction={BlendFunction.ADD}
+          intensity={100}
           luminanceThreshold={0.1}
-          luminanceSmoothing={0.5}
-          blurPass={new BlurPass()}
+          luminanceSmoothing={1.3}
         />
-
-        <Outline blur={true} />
-      </EffectComposer>
-    </>
+    </EffectComposer>
   );
-}*/
+}
 
 export default function Jellyfish() {
   return (
-      <Canvas
-        linear
-        dpr={[1, 2]}
-        camera={{ fov: 100, position: [0, 0, 30] }}
-        onCreated={({ gl }) => {
-          //gl.toneMapping = THREE.Uncharted2ToneMapping;
-          gl.setClearColor(new THREE.Color('#020207'));
-        }}
-      >
-        <fog attach="fog" args={['white', 50, 190]} />
-        <pointLight distance={100} intensity={4} color="white" />
-        <Jellyfish1 />
-        
-        <OrbitControls />
-      </Canvas>
+    <Canvas
+      dpr={[1, 2]}
+      camera={{ fov: 100, position: [0, 0, 30] }}
+      onCreated={({ gl }) => {
+        //gl.toneMapping = THREE.Uncharted2ToneMapping;
+        gl.setClearColor(new THREE.Color('#020207'));
+      }}
+    >
+      <fog attach="fog" args={['white', 50, 190]} />
+      <pointLight distance={100} intensity={4} color="white" />
+      <Jellyfish1 />
+      <R3fEffects />
+      <OrbitControls />
+    </Canvas>
   );
 }
 

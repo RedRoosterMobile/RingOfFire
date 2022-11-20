@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 import { WaveMaterial } from './WaveMaterial';
 import { LavaMaterial } from './LavaMaterial';
+import { FbmMaterial } from './FbmMaterial';
 import {
   useTexture,
   shaderMaterial,
@@ -162,7 +163,7 @@ function R3fEffects() {
     param2 = sinner;
     //if (show)
     //  mceRef.current.uniforms.set('param2',{value: param2});
-    
+
     // hack to get the previous ones to work. weird, man!
     if (time > 1) setShow(true);
     // works
@@ -172,18 +173,15 @@ function R3fEffects() {
   return (
     <>
       <EffectComposer>
-  
         <MyCustomEffect param2={param2} weights={weights}></MyCustomEffect>
         <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
         <ColorDepth blendFunction={BlendFunction.NORMAL} bits={16} />
         <Bloom
-        blendFunction={BlendFunction.ADD}
+          blendFunction={BlendFunction.ADD}
           intensity={6}
           luminanceThreshold={0.9}
           luminanceSmoothing={1.5}
         />
-
-        
       </EffectComposer>
     </>
   );
@@ -286,6 +284,19 @@ function Torus2() {
     </Torus>
   );
 }
+
+function FbmThing() {
+  const matRef = useRef();
+  useFrame((state, delta) => {
+    matRef.current.time += delta * 4;
+  });
+  const [geometry] = useState(() => new THREE.SphereGeometry(3.1, 32, 32), []);
+  return (
+    <mesh geometry={geometry}>
+      <fbmMaterial ref={matRef} />
+    </mesh>
+  );
+}
 function Sphere({ geometry, x, y, z, s }) {
   const ref = useRef();
   // make em wobble https://tympanus.net/codrops/2021/01/26/twisted-colorful-spheres-with-three-js/
@@ -375,6 +386,7 @@ export default function App() {
         <RandomSpheres />
         <Lava />
         <Torus2 />
+        <FbmThing />
         <Stars />
         <Ikke x={0} y={0} z={0} s={1} radius={1} detail={4} dance={false} />
         <R3fEffects />
