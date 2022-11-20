@@ -148,36 +148,50 @@ function Effects() {
 
 function R3fEffects() {
   let mceRef = useRef();
-  let weights = [5.1,0.1,1.9];
+  let weights = [5.1, 0.1, 1.9];
   let blendFunction = BlendFunction.NORMAL;
   let param2 = 0.1;
-  let time=0;
-  let sinner=0;
+  let time = 0;
+  let sinner = 0;
+  let [show, setShow] = useState(false);
 
   useFrame((state, delta) => {
-    time+=delta;
+    time += delta;
     //console.log(time);
-    sinner=Math.sin(time)*0.5+0.5;
-    param2=sinner;
-    mceRef.current.uniforms.set('param2',{value: param2});
+    sinner = Math.sin(time) * 0.5 + 0.5;
+    param2 = sinner;
+    //if (show)
+    //  mceRef.current.uniforms.set('param2',{value: param2});
+    
+    // hack to get the previous ones to work. weird, man!
+    if (time > 1) setShow(true);
     // works
     //mceRef.current.blendMode=BlendFunction.ALPHA;
   });
-
+  // TODO: somehow split them up.. to have the water effect sperate because of input buffer
   return (
     <>
       <EffectComposer>
-        <MyCustomEffect ref={mceRef} weights={weights} param2={param2} blendFunction={blendFunction} />
+  
+        <MyCustomEffect param2={param2} weights={weights}></MyCustomEffect>
         <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
         <ColorDepth blendFunction={BlendFunction.NORMAL} bits={16} />
         <Bloom
-          attachArray="passes"
-          intensity={5}
-          luminanceThreshold={0.1}
-          luminanceSmoothing={0.5}
-          blurPass={new BlurPass()}
+        blendFunction={BlendFunction.ADD}
+          intensity={6}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={1.5}
         />
-        <Outline blur={true} />
+
+        
+      </EffectComposer>
+    </>
+  );
+}
+function R3fPostEffects() {
+  return (
+    <>
+      <EffectComposer>
         <WaterEffect />
       </EffectComposer>
     </>
@@ -354,7 +368,7 @@ function Main({ children }) {
 export default function App() {
   return (
     <div style={{ padding: '5px', backgroundColor: 'gray', height: '100%' }}>
-      <Canvas camera={{ position: [-20, 20, 20] }}>
+      <Canvas camera={{ position: [-20, 20, 20] }} dpr={1}>
         <color attach={'background'} args={['black']} />
         <fog attach="fog" args={['white', 1, 155]} />
         <pointLight position={[-5, 5, 5]} />
@@ -363,7 +377,7 @@ export default function App() {
         <Torus2 />
         <Stars />
         <Ikke x={0} y={0} z={0} s={1} radius={1} detail={4} dance={false} />
-        <R3fEffects/>
+        <R3fEffects />
         <OrbitControls />
       </Canvas>
     </div>

@@ -11,7 +11,6 @@ import glsl from 'babel-plugin-glsl/macro';
 // some custom shader code
 const fragmentShader = glsl`
 uniform float time;
-uniform sampler2D tex;
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
     //vec2 vUv = uv.xy;
@@ -24,6 +23,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     uv1.x += cos(x+y) * amplitude * cos(y);
     uv1.y += sin(x-y) * amplitude * cos(y);
     // https://github.com/aguilarmiqueas/car-game/blob/62872b759b9a28c75860347db311561b9a790bce/src/CustomPass.js
+    // secrect sauce: inputBuffer.....man this took me hours to find
     vec4 rgba = texture2D(inputBuffer, uv1);
     outputColor= rgba;
     //outputColor = inputColor;
@@ -43,8 +43,7 @@ class WaterEffectImpl extends Effect {
     super('WaterEffect', fragmentShader, {
       _blendFunction,
       uniforms: new Map([
-        ['time', new Uniform(_time)],
-        ['tex', new Uniform(null)],
+        ['time', new Uniform(_time)]
       ]),
     });
   }
@@ -52,14 +51,6 @@ class WaterEffectImpl extends Effect {
   update(renderer, inputBuffer, deltaTime) {
     _time += deltaTime;
     this.uniforms.set('time', { value: _time });
-    // how to set the damn input?
-    //console.log(inputBuffer.texture);
-    //this.uniforms.set('time', { value: new Uniform(_time) });
-    //console.log(this.uniforms[0]);
-    //this.uniforms.set('tex', { value: new Texture(inputBuffer.texture) });
-    // tex: { type: 't', value: null },
-    //this.uniforms['tex'] = inputBuffer.texture;
-    //this.uniforms['tex'] = new Texture(inputBuffer.texture)
   }
 }
 
