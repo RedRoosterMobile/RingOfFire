@@ -84,6 +84,7 @@ const Glitch = (glitchEffectProps) => {
     //const glitchPass = new EffectPass(camera, glitchEffect);
 
     //glitchPass.renderToScreen = true;
+    finalPass.renderToScreen = true;
 
     effectComposer.addPass(finalPass);
 

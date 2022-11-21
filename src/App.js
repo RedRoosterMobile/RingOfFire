@@ -36,7 +36,9 @@ import { WaterEffect } from './WaterEffect';
 import { BlurPass, BlendFunction } from 'postprocessing';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-extend({ FilmPass, UnrealBloomPass });
+import {AdaptiveToneMappingPass } from 'three/examples/jsm/postprocessing/AdaptiveToneMappingPass';
+
+extend({ FilmPass, UnrealBloomPass,AdaptiveToneMappingPass });
 
 import { EffectComposer as OldEffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
@@ -167,6 +169,17 @@ function R3fEffects() {
     </>
   );
 }
+// somehow it must be possible
+// https://github.com/pmndrs/drei/issues/935
+const RenderPipeline = ({
+  bloom = true,
+  toneMapping = true,
+  vignette = false
+}) => (
+  <Effects>
+    {toneMapping && <adaptiveToneMappingPass args={[true, 256]} />}
+  </Effects>
+)
 function R3fPostEffects() {
   return (
     <>
@@ -271,6 +284,8 @@ function FbmThing() {
   useFrame((state, delta) => {
     matRef.current.time += delta * 4;
   });
+  // fix uv mapping
+  // https://en.wikibooks.org/wiki/GLSL_Programming/GLUT/Textured_Spheres
   const [geometry] = useState(() => new THREE.SphereGeometry(3.1, 32, 32), []);
   return (
     <mesh geometry={geometry}>
@@ -376,7 +391,7 @@ export default function App() {
     </div>
   );
 }
-
+// <RenderPipeline bloom={true} />
 /*
     radius?: number;
     depth?: number;

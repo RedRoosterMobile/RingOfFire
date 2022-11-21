@@ -23,6 +23,7 @@ import {
   Sparkles,
   Plane,
   Select,
+  Stats,
 } from '@react-three/drei';
 import Glitch from './Glitch';
 
@@ -164,7 +165,7 @@ export default function Jellyfish() {
     >
      
       
-      <pointLight position={[0, 0, 0]} />
+      <pointLight intensity={0.1} position={[0, 15, 0]} castShadow/>
       
       <Jellyfish1 />
       <Shark position={[0, 0, 1]} />
@@ -180,12 +181,16 @@ export default function Jellyfish() {
       <Terrain />
 
       <OrbitControls />
-<R3fEffects/>
-     
+
       {fxReady && null}
+      <Stats/>
     </Canvas>
   );
 }
+/**
+ * <R3fEffects/>
+     <Glitch />
+ */
 //<pointLight position={[-5, 5, 5]} />
 //<fog attach="fog" args={['blue', 1, 155]} />
 //<Ground />
