@@ -14,7 +14,7 @@ uniform float time;
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
     //vec2 vUv = uv.xy;
-    float factor=0.0; // <-1.5
+    float factor=3.0; // <-1.5
     vec2 uv1 = uv;
     float frequency = 6.0;
     float amplitude = 0.015 * factor;
@@ -28,10 +28,16 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     outputColor= rgba;
     //outputColor = inputColor;
 }`;
-const vertexShader = `
-void mainSupport(const in vec2 uv);
-// or 
-void mainSupport();
+const vertexShader = glsl`
+varying vec3 vNormal;
+varying vec3 vPosition;
+void mainSupport() {
+  //vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.);
+  //gl_Position = projectionMatrix * modelViewPosition;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  //vNormal = (modelMatrix * vec4(normal, 0.0)).xyz;
+  //vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+}
 `;
 
 let _blendFunction;
@@ -45,6 +51,7 @@ class WaterEffectImpl extends Effect {
       uniforms: new Map([
         ['time', new Uniform(_time)]
       ]),
+      vertexShader: vertexShader
     });
   }
   // (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {

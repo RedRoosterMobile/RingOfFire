@@ -87,6 +87,7 @@ class MyCustomEffectImpl extends Effect {
   }
 
   update(renderer, inputBuffer, deltaTime) {
+    
     _time += deltaTime;
     this.uniforms.set('time', { value: _time });
     let zeroToOne = Math.sin(_time) * 0.5 + 0.5;
@@ -94,7 +95,8 @@ class MyCustomEffectImpl extends Effect {
     this.uniforms.get('weights').value.x = parseFloat(zeroToOne);
     // probably not needed
     //this.blendMode = _uBlendMode;
-    
+    // *needed?
+    super.update(renderer, inputBuffer, deltaTime);
   }
 }
 

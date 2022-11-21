@@ -20,11 +20,10 @@ export function Jellyfish1(props) {
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
     const animationAction = actions["200"];
-    console.log(animationAction);
     animationAction.play();
   });
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null} >
       <group name="Sketchfab_Scene">
         <group
           name="Sketchfab_model"
@@ -45,6 +44,7 @@ export function Jellyfish1(props) {
                   />
                   <skinnedMesh
                     name="Object_8"
+                    
                     geometry={nodes.Object_8.geometry}
                     material={materials['Crystal-jelly_bell1']}
                     skeleton={nodes.Object_8.skeleton}
@@ -54,7 +54,8 @@ export function Jellyfish1(props) {
                     name="Object_9"
                     geometry={nodes.Object_9.geometry}
                     material={materials['Crystal-jelly_bell2']}
-                    material-color={"orange"}
+                    material-color={[2,1.75,0]}
+                    emissive={[2,1.75,0]} emissiveIntensity={100.1} toneMapped={false} 
                     skeleton={nodes.Object_9.skeleton}
                   />
                 </group>

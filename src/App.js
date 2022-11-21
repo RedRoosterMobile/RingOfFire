@@ -1,7 +1,7 @@
 import { useRef, Suspense, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
-import { WaveMaterial } from './WaveMaterial';
+import { WaveMaterial } from './failed_attempts_graveyard/WaveMaterial';
 import { LavaMaterial } from './LavaMaterial';
 import { FbmMaterial } from './FbmMaterial';
 import {
@@ -42,25 +42,6 @@ import { EffectComposer as OldEffectComposer } from 'three/examples/jsm/postproc
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { GlitchPass } from 'three/examples/jsm/postprocessing/GlitchPass';
 extend({ OldEffectComposer, RenderPass, GlitchPass });
-function ShaderPlane() {
-  const ref = useRef();
-  const { width, height } = useThree((state) => state.viewport);
-  const [texture1] = useTexture(['/download.jpeg']);
-  useFrame((state, delta) => (ref.current.time += delta));
-  return (
-    <mesh scale={[width, height, 1]}>
-      <planeGeometry />
-      <waveMaterial
-        ref={ref}
-        tex={texture1}
-        key={WaveMaterial.key}
-        toneMapped={true}
-        colorStart={'orange'}
-        colorEnd={'red'}
-      />
-    </mesh>
-  );
-}
 
 //https://codesandbox.io/s/r3f-selective-bloom-7mfqw?file=/src/index.js:1460-2052
 function BloomOld({ children }) {
