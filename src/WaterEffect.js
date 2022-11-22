@@ -11,11 +11,29 @@ import glsl from 'babel-plugin-glsl/macro';
 // some custom shader code
 const fragmentShader = glsl`
 //uniform float time;
+// defaults https://github.com/pmndrs/postprocessing/blob/75f7acb064f84c6d179817604180389193e981f9/src/materials/glsl/effect.frag
+// postporocessing
+// https://codesandbox.io/s/github/pmndrs/threejs-journey/tree/main/examples/extra/PostProcessing
+// https://codesandbox.io/s/github/pmndrs/threejs-journey/tree/main/examples/extra/PostProcessing?file=/src/customEffects/Displacement.jsx:133-147
+// uv normal magic
+// https://codesandbox.io/s/react-three-custom-shader-lslhur?file=/src/App.js
+// fireflies
+// https://codesandbox.io/s/github/pmndrs/threejs-journey/tree/main/examples/extra/Portal?file=/src/App.jsx:425-449
+// https://github.com/pmndrs/postprocessing/blob/5ef13d07264edccdb6ac7880fe1dc56ef64dffe6/src/effects/glsl/bokeh.frag
+// https://codesandbox.io/s/post-processing-with-r3f-forked-zw8rwv?file=/src/App.tsx
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+//void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
+    // dunno..
+    vec2 aspectCorrection = vec2(1.0, aspect);
+    const float depth = 1.;
+    float viewZ = perspectiveDepthToViewZ(depth, cameraNear, cameraFar);
+		float linearDepth = viewZToOrthographicDepth(viewZ, cameraNear, cameraFar);
+
+    
     //vec2 vUv = uv.xy;
     float factor=1.0; // <-1.5
-    vec2 uv1 = uv;
+    vec2 uv1 = vUv;
     float frequency = 6.0;
     float amplitude = 0.015 * factor;
     float x = uv1.y * frequency + time * .7;
@@ -30,6 +48,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 }`;
 const vertexShader = glsl`
 varying vec3 vNormal;
+/*
 varying vec3 vPosition;
 void mainSupport() {
   //vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.);
@@ -37,6 +56,13 @@ void mainSupport() {
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   //vNormal = (modelMatrix * vec4(normal, 0.0)).xyz;
   //vPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+}*/
+
+
+void mainSupport(const in vec2 uv) {
+		vUv = uv * vec2(aspect, 1.0) * scale;
+	#endif
+
 }
 `;
 

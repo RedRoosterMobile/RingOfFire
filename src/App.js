@@ -161,8 +161,8 @@ function R3fEffects() {
         <ColorDepth blendFunction={BlendFunction.NORMAL} bits={16} />
         <Bloom
           blendFunction={BlendFunction.ADD}
-          intensity={6}
-          luminanceThreshold={0.9}
+          intensity={0.1}
+          luminanceThreshold={0.3}
           luminanceSmoothing={1.5}
         />
       </EffectComposer>

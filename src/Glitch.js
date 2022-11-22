@@ -25,14 +25,19 @@ import {
   EffectPass,
   NormalPass,
   ShaderPass,
+  BloomEffect
+  
 } from 'postprocessing';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { HalfFloatType, Vector2 } from 'three';
+// another way of doing passes!
+// https://codesandbox.io/s/threejs-journey-level-1-forked-9slqpf?file=/src/Tint.js:2156-2165
 
 const uniforms = {
   tex: { value: null },
   time: { value: 0.0 },
-  factor: { value: 0.5 },
-  resolution: { value: new Vector2(64, 64) },
+  factor: { value: 1.0 },
+  resolution: { value: new Vector2() }, // 64,64
 };
 
 const Glitch = (glitchEffectProps) => {
@@ -42,6 +47,7 @@ const Glitch = (glitchEffectProps) => {
     const effectComposer = new EffectComposer(gl, {
       frameBufferType: HalfFloatType,
     });
+    
     effectComposer.addPass(new RenderPass(scene, camera));
 
     const normalPass = new NormalPass(scene, camera);
@@ -75,8 +81,15 @@ const Glitch = (glitchEffectProps) => {
           gl_FragColor = rgba;
       }`,
     });
-    material.map = true;
-    const finalPass = new ShaderPass(material, 'tex');
+    //material.map = true;
+    // custom bloom shader
+    // https://www.shadertoy.com/view/lsXGWn
+    const shaderPass = new ShaderPass(material, 'tex');
+    // from simondev
+    //const bloomPass = new BloomEffect({x:1024,y:1024},2.0,0.0,0.75);
+    const bloomPass = new BloomEffect();
+    effectComposer.addPass(bloomPass);
+    const finalPass = shaderPass;
 
     //
     //const waterEffect = new WaterEffect();

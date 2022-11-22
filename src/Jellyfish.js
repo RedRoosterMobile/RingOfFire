@@ -2,7 +2,7 @@ import { useRef, Suspense, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 //import { LavaMaterial } from './LavaMaterial';
-import { BlurPass, BlendFunction, Selection } from 'postprocessing';
+import { BlurPass, BlendFunction, Resizer, KernelSize } from 'postprocessing';
 extend({ Selection });
 import {
   EffectComposer,
@@ -14,6 +14,9 @@ import {
   ChromaticAberration,
   ColorDepth,
   DepthOfField,
+  SelectiveBloom,
+  Select,
+  Selection,
 } from '@react-three/postprocessing';
 import { Jellyfish1 } from './Jellyfish1';
 import { Shark } from './Shark';
@@ -22,28 +25,31 @@ import {
   OrbitControls,
   Sparkles,
   Plane,
-  Select,
   Stats,
   Stars,
 } from '@react-three/drei';
 import Glitch from './Glitch';
 import { WaterEffect } from './WaterEffect';
+import Tint from './Tint';
+//import Cactus from './Cactus';
+import CactusMesh, { RandomCacti } from './Cactus';
 
 function R3fEffects() {
   return (
     <>
       <EffectComposer>
-        <WaterEffect/>
-        <ColorDepth blendFunction={BlendFunction.NORMAL} bits={64} />   
+        <ColorDepth blendFunction={BlendFunction.NORMAL} bits={64} />
+
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL}
+          offset={1.5}
+        />
         <Bloom
           blendFunction={BlendFunction.ADD}
-          intensity={100}
-          luminanceThreshold={0.4}
+          intensity={10}
+          luminanceThreshold={0.1}
           luminanceSmoothing={1.3}
         />
-        <ChromaticAberration blendFunction={BlendFunction.NORMAL} offset={1.5} />
-        
-        
       </EffectComposer>
     </>
   );
@@ -66,18 +72,20 @@ disableRenderPass={false}
           luminanceSmoothing={1.3}
         />
 */
-function Sphere() {
+function Sphere(props) {
   return (
-    <mesh position={[-10, +10, 0]} scale={10} rotation={[0, 0, 0]} castShadow>
-      <sphereGeometry attach="geometry" args={[1, 16, 16]} />
-      <meshStandardMaterial
-        attach="material"
-        color="white"
-        transparent
-        roughness={0.1}
-        metalness={0.1}
-      />
-    </mesh>
+    <Select enabled={props.enabled}>
+      <mesh position={[-10, +10, 0]} scale={10} rotation={[0, 0, 0]} castShadow>
+        <sphereGeometry attach="geometry" args={[1, 16, 16]} />
+        <meshStandardMaterial
+          attach="material"
+          color="white"
+          transparent
+          roughness={0.1}
+          metalness={0.1}
+        />
+      </mesh>
+    </Select>
   );
 }
 const Terrain = () => {
@@ -91,10 +99,17 @@ const Terrain = () => {
   // repeat textures mirrored
   height.wrapS = height.wrapT = THREE.RepeatWrapping;
   normals.wrapS = normals.wrapT = THREE.MirroredRepeatWrapping;
+  colors.wrapS = colors.wrapT = THREE.MirroredRepeatWrapping;
 
   return (
     <group>
-      <mesh
+     
+      <RandomCacti />
+    </group>
+  );
+};
+/*
+ <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -19, 0]}
         receiveShadow
@@ -102,7 +117,7 @@ const Terrain = () => {
         <planeBufferGeometry args={[256, 256, 2096, 2096]} />
         <meshStandardMaterial
           attach="material"
-          color="white"
+          color="gray"
           map={colors}
           metalness={0.2}
           normalMap={normals}
@@ -111,9 +126,7 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
-    </group>
-  );
-};
+*/
 const Ground = () => {
   const groundRef = useRef();
 
@@ -151,52 +164,86 @@ const Ground = () => {
 export default function Jellyfish() {
   const canvasRef = useRef();
   const [fxReady, setFxReady] = useState({});
+
+  const ambientRef = useRef();
+  const pointLightRef = useRef();
+
   return (
     <Canvas
+      flat
       ref={canvasRef}
       dpr={[1, 2]}
       camera={{ fov: 100, position: [0, 0, 15] }}
       shadows={THREE.VSMShadowMap}
       onCreated={({ gl, scene, camera, size }) => {
         console.log('dunno');
-        gl.toneMapping = THREE.ReinhardToneMapping;
+        //gl.toneMapping = THREE.ReinhardToneMapping;
         // navy 000080
         // midnigtblue 191970
-        gl.setClearColor(new THREE.Color('#191970'));
-        console.log(scene);
+        //gl.setClearColor(new THREE.Color('#191970'));
+        //console.log(scene);
         setFxReady({ scene, gl, camera, size });
         // do post fx here???
+        // fog explained: https://www.youtube.com/watch?v=k1zGz55EqfU
+        // color start end
+        //<fog attach="fog" args={['blue', 1, 155]} />
+        // color exponential
+        // <fogExp2 attach="fog" args={['#000080', 0.025]} />
+        // <fogExp2 attach="fog" args={['#000080', 0.025]} />
       }}
     >
-     
-      
-      <pointLight intensity={0.8} position={[-10, 40, -5]} castShadow/>
-      <ambientLight intensity={0.02}/>
-      <Jellyfish1 />
-      <Shark position={[0, 0, -10]} />
-      <fog attach="fog" args={['blue', 1, 155]} />
-      <Sparkles
-        color={'#999'}
-        size={1.5}
-        count={60}
-        speed={0.5}
-        opacity={0.1}
-        noise={100}
-        scale={[10, 10, 10]}
-      />
-      <Terrain />
-<R3fEffects/>
+      <color attach="background" args={[0x191970]} />
 
-      <OrbitControls />
-<Stars/>
-      {fxReady && null}
-      <Stats/>
+      
+      <group>
+        <pointLight
+          ref={pointLightRef}
+          intensity={1.8}
+          position={[-10, 40, -5]}
+          castShadow
+        />
+        <ambientLight ref={ambientRef} intensity={0.02} />
+
+      <Ground/>
+        <Terrain />
+        <OrbitControls />
+      </group>
     </Canvas>
   );
 }
-/**
+/*
+<Jellyfish1 enabled={true} />
+
+<Shark position={[0, 0, -10]} />
+
+<Sparkles
+  color={'#999'}
+  size={1.5}
+  count={60}
+  speed={0.5}
+  opacity={0.1}
+  noise={100}
+  scale={[10, 10, 10]}
+/>*/
+/** <Sphere/>
+ * // <Tint />
+ *   {fxReady && <Glitch {...fxReady} />}
+ * <Sphere enabled={true} position={[0, 0, 1]} />
  * <R3fEffects/>
      <Glitch />
+
+
+       <EffectComposer>
+        <SelectiveBloom
+          lights={[ambientRef]}
+          intensity={100}
+          width={Resizer.LARGE}
+          height={Resizer.LARGE}
+          kernelSize={KernelSize.LARGE}
+          luminanceThreshold={0}
+          luminanceSmoothing={0}
+        />
+      </EffectComposer>
  */
 //<R3fEffects/>
 //<pointLight position={[-5, 5, 5]} />

@@ -11,6 +11,7 @@ https://github.com/pmndrs/gltfjsx
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { act } from '@react-three/fiber';
+import { Select } from '@react-three/postprocessing';
 
 export function Jellyfish1(props) {
   const group = useRef();
@@ -19,52 +20,58 @@ export function Jellyfish1(props) {
   );
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
-    const animationAction = actions["200"];
+    const animationAction = actions['200'];
     animationAction.play();
   });
   return (
-    <group ref={group} {...props} dispose={null} >
-      <group name="Sketchfab_Scene">
-        <group
-          name="Sketchfab_model"
-          
-        >
-          <group name="root">
-            <group name="GLTF_SceneRootNode" >
-              <group name="Crystal-jelly_arm_78">
-                <group name="GLTF_created_0">
-                  <primitive object={nodes.GLTF_created_0_rootJoint} />
-                  <group name="Crystal-jelly_mesh_77" />
-                  <skinnedMesh
-                    name="Object_7"
-                    geometry={nodes.Object_7.geometry}
-                    material={materials['Crystal-jelly_tentacle']}
-                    material-color={"aquamarine"}
-                    skeleton={nodes.Object_7.skeleton}
-                  />
-                  <skinnedMesh
-                    name="Object_8"
-                    
-                    geometry={nodes.Object_8.geometry}
-                    material={materials['Crystal-jelly_bell1']}
-                    skeleton={nodes.Object_8.skeleton}
-                    material-color={"hotpink"}
-                  />
-                  <skinnedMesh
-                    name="Object_9"
-                    geometry={nodes.Object_9.geometry}
-                    material={materials['Crystal-jelly_bell2']}
-                    material-color={[2,1.75,0]}
-                    emissive={[2,1.75,0]} emissiveIntensity={100.1} toneMapped={false} 
-                    skeleton={nodes.Object_9.skeleton}
-                  />
+    <Select enabled={props.enabled}>
+      <group ref={group} {...props} dispose={null}>
+        <group name="Sketchfab_Scene">
+          <group name="Sketchfab_model">
+            <group name="root">
+              <group name="GLTF_SceneRootNode">
+                <group name="Crystal-jelly_arm_78">
+                  <group name="GLTF_created_0">
+                    <primitive object={nodes.GLTF_created_0_rootJoint} />
+                    <group name="Crystal-jelly_mesh_77" />
+                    <skinnedMesh
+                      enabled={true}
+                      name="Object_7"
+                      geometry={nodes.Object_7.geometry}
+                      material={materials['Crystal-jelly_tentacle']}
+                      material-color={'aquamarine'}
+                      skeleton={nodes.Object_7.skeleton}
+                      receiveShadow={false}
+                    />
+                    <skinnedMesh
+                      name="Object_8"
+                      enabled={true}
+                      geometry={nodes.Object_8.geometry}
+                      material={materials['Crystal-jelly_bell1']}
+                      skeleton={nodes.Object_8.skeleton}
+                      material-color={'hotpink'}
+                      receiveShadow={false}
+                    />
+                    <skinnedMesh
+                      enabled={true}
+                      name="Object_9"
+                      geometry={nodes.Object_9.geometry}
+                      material={materials['Crystal-jelly_bell2']}
+                      material-color={[2, 1.75, 0]}
+                      emissive={[2, 1.75, 0]}
+                      emissiveIntensity={100.1}
+                      toneMapped={false}
+                      skeleton={nodes.Object_9.skeleton}
+                      receiveShadow={false}
+                    />
+                  </group>
                 </group>
               </group>
             </group>
           </group>
         </group>
       </group>
-    </group>
+    </Select>
   );
 }
 
