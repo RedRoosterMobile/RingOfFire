@@ -125,13 +125,14 @@ export function RandomCacti() {
   // https://codesandbox.io/s/r3f-ibl-envmap-simple-forked-hzlrej?file=/src/Scene.js:797-800
   const { nodes, materials } = useGLTF('/models/level.glb');
   const data = useMemo(() => {
-    return new Array(15).fill().map((_, i) => ({
-      x: randomIntFromInterval(-512,512),
+    return new Array(10).fill().map((_, i) => ({
+      x: randomIntFromInterval(-256,256),
       y: 7,
-      z: randomIntFromInterval(-512,512),
-      scale: Math.random() * 10 +10,
+      z: randomIntFromInterval(-256,256),
+      scale: randomIntFromInterval(8,10),
       geometry: nodes.Cactus.geometry,
-      animationOffset: 5,
+      animationOffset: randomIntFromInterval(30,150),
+      timeFrequency: randomIntFromInterval(22,44)/10000
     }));
   }, []);
   
@@ -141,11 +142,10 @@ export function RandomCacti() {
 }
 
 export function CactusMesh(props) {
-  const {scale,geometry,animationOffset} = props;
-  const uTime = useRef({ value: animationOffset*scale });
-  
+  const {scale,geometry,animationOffset,timeFrequency} = props;
+  const uTime = useRef({ value: 0.0 });
   // Update cactus time uniform
-  useFrame(({ clock }) => (uTime.current.value = clock.elapsedTime * 1000));
+  useFrame(({ clock }) => (uTime.current.value = clock.elapsedTime * 1000+timeFrequency));
   return (
     <group  {...props} dispose={null}>
       <mesh
@@ -153,14 +153,12 @@ export function CactusMesh(props) {
         geometry={geometry}
         scale={scale}
         position={[0, -7/props.scale, 0]}
-        
         rotation={[Math.PI / 2, 0, 0]}
       >
         <meshStandardMaterial
           attach="material"
           onBeforeCompile={(shader) => {
             shader.uniforms.uTime = uTime.current;
-            
 
             shader.vertexShader = shader.vertexShader.replace(
               '#include <common>',
@@ -182,7 +180,8 @@ export function CactusMesh(props) {
               `
           #include <begin_vertex>
           float angleMultiplier = 0.25;
-          float timeFrequency = 0.002;
+          //float timeFrequency = 0.002;
+          float timeFrequency = ${timeFrequency};
           float elevationOffsetMultiplier = 3.0;
 
           vec2 transformedRotated = rotate(transformed.xz, sin(uTime * timeFrequency + transformed.z * elevationOffsetMultiplier) * log(abs(transformed.z) + 1.0) * angleMultiplier);

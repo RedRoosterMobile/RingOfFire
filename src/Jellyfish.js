@@ -208,6 +208,7 @@ export default function Jellyfish() {
         <Terrain />
         <OrbitControls />
       </group>
+      <Stats />
     </Canvas>
   );
 }
