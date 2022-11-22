@@ -53,7 +53,7 @@ export function Shark(props) {
                     material={materials.CRS_Material}
                     skeleton={nodes.Object_8.skeleton}
                     castShadow
-                    receiveShadow
+                    
                   />
                 </group>
               </group>

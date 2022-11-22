@@ -1,6 +1,6 @@
 // https://github.com/graywolf2/xr3ngine/blob/ca9685e35bc13d47bf0985eaca9ec34e324b17c0/packages/engine/src/renderer/postprocessing/FXAAEffect.ts
 import React, { forwardRef, useMemo, useEffect } from 'react';
-import { Uniform, Texture } from 'three';
+import { Uniform } from 'three';
 import { Effect, BlendFunction } from 'postprocessing';
 import glsl from 'babel-plugin-glsl/macro';
 // no impl
@@ -10,11 +10,11 @@ import glsl from 'babel-plugin-glsl/macro';
 
 // some custom shader code
 const fragmentShader = glsl`
-uniform float time;
+//uniform float time;
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
     //vec2 vUv = uv.xy;
-    float factor=3.0; // <-1.5
+    float factor=1.0; // <-1.5
     vec2 uv1 = uv;
     float frequency = 6.0;
     float amplitude = 0.015 * factor;
@@ -41,24 +41,27 @@ void mainSupport() {
 `;
 
 let _blendFunction;
-let _time = 0;
+//let _time = 0;
 
 // Effect implementation
 class WaterEffectImpl extends Effect {
   constructor({} = {}) {
     super('WaterEffect', fragmentShader, {
       _blendFunction,
+      /*
       uniforms: new Map([
-        ['time', new Uniform(_time)]
+        //['time', new Uniform(_time)]
       ]),
-      vertexShader: vertexShader
+      */
+      //vertexShader: vertexShader
     });
   }
   // (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    /*
   update(renderer, inputBuffer, deltaTime) {
-    _time += deltaTime;
-    this.uniforms.set('time', { value: _time });
-  }
+    //_time += deltaTime;
+    //this.uniforms.set('time', { value: _time });
+  }*/
 }
 
 // Effect component

@@ -24,21 +24,26 @@ import {
   Plane,
   Select,
   Stats,
+  Stars,
 } from '@react-three/drei';
 import Glitch from './Glitch';
+import { WaterEffect } from './WaterEffect';
 
 function R3fEffects() {
   return (
     <>
       <EffectComposer>
-      
-        <ChromaticAberration blendFunction={BlendFunction.ADD} offset={1.5} />
+        <WaterEffect/>
+        <ColorDepth blendFunction={BlendFunction.NORMAL} bits={64} />   
         <Bloom
           blendFunction={BlendFunction.ADD}
           intensity={100}
-          luminanceThreshold={0.1}
+          luminanceThreshold={0.4}
           luminanceSmoothing={1.3}
         />
+        <ChromaticAberration blendFunction={BlendFunction.NORMAL} offset={1.5} />
+        
+        
       </EffectComposer>
     </>
   );
@@ -165,10 +170,11 @@ export default function Jellyfish() {
     >
      
       
-      <pointLight intensity={0.1} position={[0, 15, 0]} castShadow/>
-      
+      <pointLight intensity={0.8} position={[-10, 40, -5]} castShadow/>
+      <ambientLight intensity={0.02}/>
       <Jellyfish1 />
-      <Shark position={[0, 0, 1]} />
+      <Shark position={[0, 0, -10]} />
+      <fog attach="fog" args={['blue', 1, 155]} />
       <Sparkles
         color={'#999'}
         size={1.5}
@@ -179,9 +185,10 @@ export default function Jellyfish() {
         scale={[10, 10, 10]}
       />
       <Terrain />
+<R3fEffects/>
 
       <OrbitControls />
-
+<Stars/>
       {fxReady && null}
       <Stats/>
     </Canvas>
@@ -191,6 +198,7 @@ export default function Jellyfish() {
  * <R3fEffects/>
      <Glitch />
  */
+//<R3fEffects/>
 //<pointLight position={[-5, 5, 5]} />
 //<fog attach="fog" args={['blue', 1, 155]} />
 //<Ground />

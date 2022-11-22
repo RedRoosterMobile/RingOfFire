@@ -266,7 +266,7 @@ function Torus2() {
   const wobbleRef = useRef();
   window.wob = wobbleRef;
   return (
-    <Torus args={[2, 0.25, 40, 100]}>
+    <Torus scale={30} args={[2, 0.25, 40, 100]}>
       <MeshWobbleMaterial
         ref={wobbleRef}
         color="#f25042"
