@@ -32,22 +32,20 @@ import Glitch from './Glitch';
 import { WaterEffect } from './WaterEffect';
 import Tint from './Tint';
 //import Cactus from './Cactus';
-import CactusMesh, { RandomCacti } from './Cactus';
+import WobbleMesh, { RandomCacti } from './Cactus';
+import { MyCustomEffect } from './MyCustomEffect';
 
 function R3fEffects() {
+  let weights = [5.1, 0.1, 1.9];
   return (
     <>
       <EffectComposer>
-        <ColorDepth blendFunction={BlendFunction.NORMAL} bits={64} />
+        <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
 
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={1.5}
-        />
         <Bloom
           blendFunction={BlendFunction.ADD}
-          intensity={10}
-          luminanceThreshold={0.1}
+          intensity={20}
+          luminanceThreshold={1}
           luminanceSmoothing={1.3}
         />
       </EffectComposer>
@@ -55,7 +53,10 @@ function R3fEffects() {
   );
 }
 /*
-
+<ChromaticAberration
+          blendFunction={BlendFunction.ADD}
+          offset={[.005,0.005]}
+        />
 <MyCustomEffect param2={param2} weights={weights}></MyCustomEffect>
         <ChromaticAberration blendFunction={BlendFunction.ADD} offset={0.5} />
         <ColorDepth blendFunction={BlendFunction.NORMAL} bits={16} />
@@ -103,15 +104,9 @@ const Terrain = () => {
 
   return (
     <group>
-     
-      <RandomCacti />
-    </group>
-  );
-};
-/*
- <mesh
+      <mesh
         rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -19, 0]}
+        position={[0, -12, 0]}
         receiveShadow
       >
         <planeBufferGeometry args={[256, 256, 2096, 2096]} />
@@ -126,6 +121,12 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
+      <RandomCacti />
+    </group>
+  );
+};
+/*
+ 
 */
 const Ground = () => {
   const groundRef = useRef();
@@ -138,7 +139,7 @@ const Ground = () => {
       receiveShadow
     >
       <planeBufferGeometry args={[256, 256, 2096, 2096]} />
-      <meshStandardMaterial color={'#eeeeee'} />
+      <meshStandardMaterial color={'#C2B280'} />
     </mesh>
   );
 };
@@ -193,8 +194,8 @@ export default function Jellyfish() {
       }}
     >
       <color attach="background" args={[0x191970]} />
+      <fogExp2 attach="fog" args={['#000080', 0.025]} />
 
-      
       <group>
         <pointLight
           ref={pointLightRef}
@@ -202,12 +203,22 @@ export default function Jellyfish() {
           position={[-10, 40, -5]}
           castShadow
         />
+          <directionalLight
+        position={[0, 1, 0]}
+        castShadow
+        shadow-mapSize-height={1024}
+        shadow-mapSize-width={1024}
+        shadow-radius={10}
+        shadow-bias={-0.0001}
+      />
         <ambientLight ref={ambientRef} intensity={0.02} />
-
-      <Ground/>
+        <Shark position={[0, 0, -10]} />
+        <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
+        <Ground />
         <Terrain />
         <OrbitControls />
       </group>
+      <R3fEffects />
       <Stats />
     </Canvas>
   );

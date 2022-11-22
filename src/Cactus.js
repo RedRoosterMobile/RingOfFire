@@ -1,158 +1,56 @@
-import { useRef, useMemo, useState } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import * as THREE from 'three';
-// make this a group and place them randomly on the terrain
-/*
-function Sphere({ geometry, x, y, z, s }) {
-  const ref = useRef();
-  // make em wobble https://tympanus.net/codrops/2021/01/26/twisted-colorful-spheres-with-three-js/
 
-
-  // speed: max 10
-  // distort: min: 0 max: 1
-  // radius: 0-1
-  // <meshStandardMaterial color={'red'} metalness={0.5} roughness={0} />
-  // JELLY:
-  // <MeshDistortMaterial color="orange" speed={5} distort={0.5} radius={0.9} />
-  // and dance= false
-  // and const [geometry] = useState(() => new THREE.TorusKnotGeometry(.11, .341, 64,64,0.5,0.5), []);
-  return (
-    <mesh
-      color="orange"
-      ref={ref}
-      position={[x, y, z]}
-      scale={[s, s, s]}
-      geometry={geometry}
-    >
-      <MeshDistortMaterial
-        side={THREE.DoubleSide}
-        color="orange"
-        speed={5}
-        distort={0.5}
-        radius={0.9}
-      />
-    </mesh>
-  );
+const MODEL = '/models/cactus.glb';
+function randomIntFromInterval(min, max) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
-function RandomSpheres() {
-  const [geometry] = useState(() => new THREE.SphereGeometry(0.1, 32, 32), []);
-  // kinda like a jellyfish. Somehow cut it off with bolean operation https://github.com/looeee/threejs-csg
-  // https://github.com/pmndrs/react-three-csg
-  //const [geometry] = useState(() => new THREE.SphereGeometry(0.11,16,16, Math.PI/2,  Math.PI, 0, Math.PI), []);
-
-  // turnn then into a compound body
-  // https://codesandbox.io/s/r3f-ibl-envmap-simple-forked-hzlrej?file=/src/Scene.js:797-800
+// add more params
+export function RandomCacti({ amount = 15 }) {
+  const { nodes, materials } = useGLTF(MODEL);
   const data = useMemo(() => {
-    return new Array(15).fill().map((_, i) => ({
-      x: Math.random() * 100 - 50,
-      y: Math.random() * 100 - 50,
-      z: Math.random() * 100 - 50,
-      s: Math.random() * 10,
-      radius: Math.random() * 1,
-      detail: Math.random() * 4,
-      dance: true,
-    }));
-  }, []);
-  // <Sphere key={i} {...props} geometry={geometry} />
-  return data.map((props, i) => <Ikke key={i} {...props} />);
-}
-
-*/
-function Sphere({ geometry, x, y, z, s }) {
-  const ref = useRef();
-  // make em wobble https://tympanus.net/codrops/2021/01/26/twisted-colorful-spheres-with-three-js/
-  console.log('creating sphere at', x, y, z, s);
-
-  // speed: max 10
-  // distort: min: 0 max: 1
-  // radius: 0-1
-  // <meshStandardMaterial color={'red'} metalness={0.5} roughness={0} />
-  // JELLY:
-  // <MeshDistortMaterial color="orange" speed={5} distort={0.5} radius={0.9} />
-  // and dance= false
-  // and const [geometry] = useState(() => new THREE.TorusKnotGeometry(.11, .341, 64,64,0.5,0.5), []);
-  return (
-    <mesh
-      color="orange"
-      ref={ref}
-      position={[x, y, z]}
-      scale={[s, s, s]}
-      geometry={geometry}
-    >
-      <meshStandardMaterial color={'red'} metalness={0.1} roughness={1} />
-    </mesh>
-  );
-}
-function Sphere2({ geometry, x, y, z, s }) {
-  console.log(geometry);
-  return (
-    <mesh
-      position={[0, 0, 0]}
-      scale={10}
-      rotation={[0, 0, 0]}
-      geometry={geometry}
-      castShadow
-    >
-      <meshStandardMaterial
-        attach="material"
-        color="white"
-        transparent
-        roughness={0.1}
-        metalness={0.1}
-      />
-    </mesh>
-  );
-}
-
-
-function randomIntFromInterval(min, max) { // min and max included 
-  return Math.floor(Math.random() * (max - min + 1) + min)
-}
-export function RandomCacti() {
-  //const { nodes, materials } = useGLTF('/models/level.glb');
-  //const [geometry] = useState(() => new THREE.SphereGeometry(20, 32, 32), []);
-  const [geometry] = useState(
-    () =>
-      new THREE.SphereGeometry(0.11, 16, 16, Math.PI / 2, Math.PI, 0, Math.PI),
-    []
-  );
-  // kinda like a jellyfish. Somehow cut it off with bolean operation https://github.com/looeee/threejs-csg
-  // https://github.com/pmndrs/react-three-csg
-  //const [geometry] = useState(() => new THREE.SphereGeometry(0.11,16,16, Math.PI/2,  Math.PI, 0, Math.PI), []);
-
-  // turnn then into a compound body
-  // https://codesandbox.io/s/r3f-ibl-envmap-simple-forked-hzlrej?file=/src/Scene.js:797-800
-  const { nodes, materials } = useGLTF('/models/level.glb');
-  const data = useMemo(() => {
-    return new Array(10).fill().map((_, i) => ({
-      x: randomIntFromInterval(-256,256),
-      y: 7,
-      z: randomIntFromInterval(-256,256),
-      scale: randomIntFromInterval(8,10),
+    return new Array(amount).fill().map((_, i) => ({
+      x: randomIntFromInterval(-128, 128),
+      y: 0,
+      z: randomIntFromInterval(-128, 128),
+      scale: randomIntFromInterval(4, 6),
       geometry: nodes.Cactus.geometry,
-      animationOffset: randomIntFromInterval(30,150),
-      timeFrequency: randomIntFromInterval(22,44)/10000
+      elevationOffsetMultiplier: randomIntFromInterval(2, 5),
+      timeFrequency: randomIntFromInterval(22, 44) / 10000,
     }));
   }, []);
-  
+
   return data.map((props, i) => (
-    <CactusMesh key={i} {...props} position={[props.x, props.y, props.z]}  />
+    <WobbleMesh key={i} {...props} position={[props.x, props.y, props.z]} />
   ));
 }
 
-export function CactusMesh(props) {
-  const {scale,geometry,animationOffset,timeFrequency} = props;
+/**
+ *
+ * @param {number} scale
+ * @param {BufferGeometry} geometry
+ * @param {number} elevationOffsetMultiplier 3.0
+ * @param {number} timeFrequency 0.0002
+ * @param {Vector3} position [0,0,0]
+ * @returns
+ */
+export function WobbleMesh(props) {
+  const { scale, geometry, elevationOffsetMultiplier, timeFrequency } = props;
   const uTime = useRef({ value: 0.0 });
   // Update cactus time uniform
-  useFrame(({ clock }) => (uTime.current.value = clock.elapsedTime * 1000+timeFrequency));
+  useFrame(
+    ({ clock }) =>
+      (uTime.current.value = clock.elapsedTime * 1000 + timeFrequency)
+  );
   return (
-    <group  {...props} dispose={null}>
+    <group {...props} dispose={null}>
       <mesh
         castShadow
         geometry={geometry}
         scale={scale}
-        position={[0, -7/props.scale, 0]}
+        position={[0, 0, 0]}
         rotation={[Math.PI / 2, 0, 0]}
       >
         <meshStandardMaterial
@@ -181,8 +79,11 @@ export function CactusMesh(props) {
           #include <begin_vertex>
           float angleMultiplier = 0.25;
           //float timeFrequency = 0.002;
-          float timeFrequency = ${timeFrequency};
-          float elevationOffsetMultiplier = 3.0;
+          float timeFrequency = ${parseFloat(timeFrequency).toFixed(5)};
+          //float elevationOffsetMultiplier = 3.0;
+          float elevationOffsetMultiplier = ${parseFloat(
+            elevationOffsetMultiplier
+          ).toFixed(1)};
 
           vec2 transformedRotated = rotate(transformed.xz, sin(uTime * timeFrequency + transformed.z * elevationOffsetMultiplier) * log(abs(transformed.z) + 1.0) * angleMultiplier);
           transformed.xz = transformedRotated;
@@ -190,8 +91,7 @@ export function CactusMesh(props) {
             );
           }}
           color="green"
-          transparent
-          roughness={0.9}
+          roughness={1.0}
           metalness={0.0}
         />
       </mesh>
@@ -199,4 +99,5 @@ export function CactusMesh(props) {
   );
 }
 
-export default CactusMesh;
+export default WobbleMesh;
+useGLTF.preload(MODEL);
