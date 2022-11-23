@@ -22,23 +22,23 @@ function getRandomFloat(min, max, decimals) {
  * 
  */
 export function Seaweed({ amount = 30 }) {
-  const obj = useLoader(OBJLoader, MODEL);
+  const geom = useMemo(() => useLoader(OBJLoader, MODEL).children[0].geometry, [])
   
   const data = useMemo(() => {
     return new Array(amount).fill().map((_, i) => ({
       x: randomIntFromInterval(-128, 0),
       y: 0,
       z: randomIntFromInterval(-128, 0),
-      scale: getRandomFloat(1.5, 1.7),
+      scale: getRandomFloat(1.4, 2),
       rotation: [0, Math.PI / getRandomFloat(Math.PI / 1, 2 * Math.PI), 0],
-      geometry: obj.children[0].geometry,
+      geometry: geom,
       elevationOffsetMultiplier: randomIntFromInterval(2, 5),
       timeFrequency: randomIntFromInterval(22, 44) / 10000,
     }));
-  }, [obj]);
+  }, [geom]);
 
   return data.map((props, i) => (
-    <ASeaweedBush key={i} {...props} position={[props.x, props.y, props.z]} />
+    <WobbleSeaweed key={i} {...props} position={[props.x, props.y, props.z]} />
   ));
 }
 
@@ -51,7 +51,7 @@ export function Seaweed({ amount = 30 }) {
  * @param {Vector3} position [0,0,0]
  * @returns
  */
-export function ASeaweedBush(props) {
+export function WobbleSeaweed(props) {
   const {
     scale,
     geometry,
@@ -70,9 +70,9 @@ export function ASeaweedBush(props) {
       <mesh
         castShadow
         geometry={geometry}
-        scale={scale}
         position={[0, 0, 0]}
         rotation={[0, 0, 0]}
+        scale={1}
       >
         <meshStandardMaterial
           attach="material"

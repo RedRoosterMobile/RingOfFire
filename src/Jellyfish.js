@@ -3,6 +3,8 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 //import { LavaMaterial } from './LavaMaterial';
 import { BlurPass, BlendFunction, Resizer, KernelSize } from 'postprocessing';
+import { useSpring, animated, config } from "@react-spring/three";
+
 extend({ Selection });
 import {
   EffectComposer,
@@ -36,13 +38,14 @@ import WobbleMesh, { RandomCacti } from './Cactus';
 import { MyCustomEffect } from './MyCustomEffect';
 import { Monument } from './Monument';
 import { Seaweed } from './Seaweed';
+import { Rocks } from './Rock';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
   return (
     <>
       <EffectComposer>
-      <WaterEffect />
+        <WaterEffect />
         <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
         <Bloom
           blendFunction={BlendFunction.ADD}
@@ -92,12 +95,11 @@ function Sphere(props) {
   );
 }
 const Terrain = () => {
-  //const height = useLoader(THREE.TextureLoader, "/textures/sea_floor/DisplacementMap.png");
-  //const normals = useLoader(THREE.TextureLoader, "/textures/sea_floor/NormalMap.png");
-  const [height, normals, colors] = useTexture([
+  const [height, normals, colors, specular] = useTexture([
     '/textures/sea_floor/DisplacementMap.png',
     '/textures/sea_floor/NormalMap.png',
     '/textures/sea_floor/AmbientOcclusionMap.png',
+    '/textures/sea_floor/SpecularMap.png',
   ]);
   // repeat textures mirrored
   height.wrapS = height.wrapT = THREE.RepeatWrapping;
@@ -115,7 +117,7 @@ const Terrain = () => {
         <meshStandardMaterial
           attach="material"
           color="gray"
-          map={colors}
+          map={specular}
           aoMap={colors}
           metalness={0.2}
           normalMap={normals}
@@ -124,8 +126,9 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
-      
-      <Seaweed amount={15}/>
+      <Monument  amount={5}/>
+      <Seaweed amount={20} />
+      <Rocks amount={2}/>
     </group>
   );
 };
@@ -153,14 +156,16 @@ export default function Jellyfish() {
 
   const ambientRef = useRef();
   const pointLightRef = useRef();
-
+  // https://docs.pmnd.rs/react-three-fiber/advanced/scaling-performance
   return (
     <Canvas
-      flat
+      // Only render on changes and movement
+      //frameloop="demand"
       ref={canvasRef}
       dpr={[1, 2]}
       camera={{ fov: 100, position: [0, 0, 15] }}
-      shadows={THREE.VSMShadowMap}
+      //shadows={THREE.VSMShadowMap}
+      shadows
       onCreated={({ gl, scene, camera, size }) => {
         console.log('dunno');
         //gl.toneMapping = THREE.ReinhardToneMapping;
@@ -169,6 +174,8 @@ export default function Jellyfish() {
         //gl.setClearColor(new THREE.Color('#191970'));
         //console.log(scene);
         setFxReady({ scene, gl, camera, size });
+        gl.shadowMap.autoUpdate = false;
+        gl.shadowMap.needsUpdate = true;
         // do post fx here???
         // fog explained: https://www.youtube.com/watch?v=k1zGz55EqfU
         // color start end
@@ -180,7 +187,6 @@ export default function Jellyfish() {
       }}
     >
       <color attach="background" args={[0x191970]} />
-     
 
       <group>
         <pointLight
@@ -198,17 +204,18 @@ export default function Jellyfish() {
           shadow-bias={-0.0001}
         />
         <ambientLight ref={ambientRef} intensity={0.02} />
-        <Shark position={[0, 0, -10]} />
-        <Monument/>
+        <Shark position={[0, 0, 0]} />
+       
         <Ground />
-        <Terrain />
+        
         <OrbitControls />
       </group>
-      
+
       <Stats />
     </Canvas>
   );
 }
+// <Terrain />
 /*
 <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
 <Jellyfish1 enabled={true} />

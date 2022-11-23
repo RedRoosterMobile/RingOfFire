@@ -16,9 +16,14 @@ title: Model 54A - Caribbean Reef Shark
 
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import { Quaternion } from 'three';
 
 export function Shark(props) {
   const group = useRef();
+  const innerGroup = useRef();
+  const sharkEyes = useRef();
+  const sharkBody = useRef();
   const { nodes, materials, animations } = useGLTF(
     '/models/caribbean_reef_shark.glb'
   );
@@ -27,10 +32,40 @@ export function Shark(props) {
     const animationAction = actions.Action;
     animationAction.play();
   });
+  let time = 0;
+  // complicated way: https://www.html5gamedevs.com/topic/39335-make-sprite-follow-cursor-including-rotating-it-but-in-steps/
+
+  let quaternion = new Quaternion();
+
+  useFrame(
+    (gl, delta) => {
+      //quaternion.setFromAxisAngle([0,0,0], Math.PI);
+      //console.log(gl.clock);
+      //console.log(innerGroup.current.rotation);
+      time += delta ;
+      // todo: RTFM
+      // https://dev.to/keefdrive/crash-course-in-interactive-3d-animation-with-react-three-fiber-and-react-spring-2dj
+
+      group.current.rotation.y = group.current.rotation.y - delta/5; //1*Math.cos(time) + 0;
+      //group.current.rotation.z +=delta//1*Math.sin(time) + 0;
+      //innerGroup.current.position.x =10*Math.cos(time) + 0;
+      //innerGroup.current.position.z =10*Math.sin(time) + 0;
+      //innerGroup.current.rotation.setFromVector3([0,0,0])
+      //innerGroup.current.rotation.setFrom
+      //innerGroup.lookAt([0,0,0]);
+    },
+    [group]
+  );
+
   return (
     <group ref={group} {...props} dispose={null}>
-      <group name="Sketchfab_model" scale={10}>
-        <group name="Carribean_Reef_Shark_Armature_33" position={[0.17, 0, 0]}>
+      <group name="Sketchfab_model" scale={1}>
+        <group
+          ref={innerGroup}
+          name="Carribean_Reef_Shark_Armature_33"
+          scale={10}
+          position={[0, 0, 100]}
+        >
           <primitive object={nodes.GLTF_created_0_rootJoint} />
           <skinnedMesh
             name="Object_7"
