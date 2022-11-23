@@ -45,7 +45,7 @@ function R3fEffects() {
   return (
     <>
       <EffectComposer>
-        <WaterEffect />
+        
         <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
         <Bloom
           blendFunction={BlendFunction.ADD}
@@ -57,7 +57,7 @@ function R3fEffects() {
     </>
   );
 }
-/*
+/*<WaterEffect />
 <ChromaticAberration
           blendFunction={BlendFunction.ADD}
           offset={[.005,0.005]}
@@ -126,7 +126,7 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
-      <Monument  amount={5}/>
+      <Monument  amount={50}/>
       <Seaweed amount={20} />
       <Rocks amount={2}/>
     </group>
@@ -182,12 +182,10 @@ export default function Jellyfish() {
         //<fog attach="fog" args={['blue', 1, 155]} />
         // color exponential
         // <fogExp2 attach="fog" args={['#000080', 0.025]} />
-        // <fogExp2 attach="fog" args={['#000080', 0.025]} />
-        //  <fogExp2 attach="fog" args={['#000080', 0.025]} />
       }}
     >
       <color attach="background" args={[0x191970]} />
-
+      <fogExp2 attach="fog" args={['#000080', 0.010]} />
       <group>
         <pointLight
           ref={pointLightRef}
@@ -195,19 +193,12 @@ export default function Jellyfish() {
           position={[-10, 40, -5]}
           castShadow
         />
-        <directionalLight
-          position={[0, 1, 0]}
-          castShadow
-          shadow-mapSize-height={1024}
-          shadow-mapSize-width={1024}
-          shadow-radius={10}
-          shadow-bias={-0.0001}
-        />
+        
         <ambientLight ref={ambientRef} intensity={0.02} />
         <Shark position={[0, 0, 0]} />
-       
+        <Terrain />
         <Ground />
-        
+        <R3fEffects/>
         <OrbitControls />
       </group>
 

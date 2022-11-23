@@ -45,6 +45,9 @@ export function Monument({ amount = 25 }) {
  */
 export function AMonument(props) {
   const { scale, geometry, rotation } = props;
+  const rgbTo01=(r,g,b)=> {
+    return [r/255,g/255,b/255];
+  }
   return (
     <group {...props} dispose={null}>
       <mesh
@@ -55,7 +58,9 @@ export function AMonument(props) {
       >
         <meshStandardMaterial
           attach="material"
-          color="gold"
+          toneMapped={false}
+          emissive={true}
+          color={rgbTo01(255*1,215,0)}
           roughness={0.3}
           metalness={1.0}
         />

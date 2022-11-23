@@ -17,14 +17,13 @@ title: Model 54A - Caribbean Reef Shark
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { Quaternion } from 'three';
-import { useSpring, animated, config } from '@react-spring/three';
+// import { Quaternion } from 'three';
+// import { useSpring, animated, config } from '@react-spring/three';
 
 export function Shark(props) {
   const group = useRef();
+  const sharkBodyRefShadow = useRef();
   const innerGroup = useRef();
-  const sharkEyes = useRef();
-  const sharkBody = useRef();
   const { nodes, materials, animations } = useGLTF(
     '/models/caribbean_reef_shark.glb'
   );
@@ -33,7 +32,6 @@ export function Shark(props) {
     const animationAction = actions.Action;
     animationAction.play();
   });
-  let time = 0;
   // complicated way of rotating:
   // https://www.html5gamedevs.com/topic/39335-make-sprite-follow-cursor-including-rotating-it-but-in-steps/
   //https://codesandbox.io/s/react-spring-looping-gmlq8?from-embed
@@ -46,27 +44,28 @@ export function Shark(props) {
   const elongationUpDown = 0.01;
   let elongationUpDownDelta = 0;
 
-  const elongationLeftRight = 0.1;
+  const elongationLeftRight = 0.01;
   let elongationLeftRightDelta = 0;
 
-  useFrame(
-    (gl, delta) => {
-      time += delta;
-      elongationUpDownDelta =  elongationUpDown * Math.sin(time);
-      elongationLeftRightDelta =  elongationUpDown * Math.sin(time);
-      //console.log(param);
-      innerGroup.current.position.y = innerGroup.current.position.y+ elongationUpDownDelta;
-      //console.log(param);
-      innerGroup.current.position.z = innerGroup.current.position.z+ elongationLeftRightDelta;
-      group.current.rotation.y = group.current.rotation.y - delta/5; //1*Math.cos(time) + 0;
-    },
-    [group]
-  );
+  let time = 0;
+  useFrame((gl, delta) => {
+    time += delta;
+    elongationUpDownDelta = elongationUpDown * Math.sin(time);
+    elongationLeftRightDelta = elongationLeftRight * Math.sin(time);
+    innerGroup.current.position.y =
+      innerGroup.current.position.y + elongationUpDownDelta;
+    innerGroup.current.position.z =
+      innerGroup.current.position.z + elongationLeftRightDelta;
+    group.current.rotation.y = group.current.rotation.y - delta / 5;
+    // update shadow somehow..
+    //sharkBodyRefShadow.current.position.z = Math.sin(time);
+    //console.log(sharkBodyRefShadow.current.position.z);
+  });
 
   return (
     <group name="outer-group" ref={group} {...props} dispose={null}>
       <group name="Sketchfab_model" scale={1}>
-        <animated.group
+        <group
           ref={innerGroup}
           name="inner-group"
           scale={10}
@@ -80,13 +79,14 @@ export function Shark(props) {
             skeleton={nodes.Object_7.skeleton}
           />
           <skinnedMesh
+            ref={sharkBodyRefShadow}
             name="Object_8"
             geometry={nodes.Object_8.geometry}
             material={materials.CRS_Material}
             skeleton={nodes.Object_8.skeleton}
             castShadow
           />
-        </animated.group>
+        </group>
       </group>
     </group>
   );
