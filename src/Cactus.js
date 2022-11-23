@@ -7,6 +7,10 @@ function randomIntFromInterval(min, max) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
+function getRandomFloat(min, max, decimals) {
+  const str = (Math.random() * (max - min) + min).toFixed(decimals);
+  return parseFloat(str);
+}
 // add more params
 export function RandomCacti({ amount = 15 }) {
   const { nodes, materials } = useGLTF(MODEL);
@@ -16,6 +20,7 @@ export function RandomCacti({ amount = 15 }) {
       y: 0,
       z: randomIntFromInterval(-128, 128),
       scale: randomIntFromInterval(4, 6),
+      rotation: [0, Math.PI / getRandomFloat(Math.PI / 1, 2 * Math.PI), 0],
       geometry: nodes.Cactus.geometry,
       elevationOffsetMultiplier: randomIntFromInterval(2, 5),
       timeFrequency: randomIntFromInterval(22, 44) / 10000,
@@ -37,7 +42,7 @@ export function RandomCacti({ amount = 15 }) {
  * @returns
  */
 export function WobbleMesh(props) {
-  const { scale, geometry, elevationOffsetMultiplier, timeFrequency } = props;
+  const { scale, geometry, elevationOffsetMultiplier, timeFrequency, rotation } = props;
   const uTime = useRef({ value: 0.0 });
   // Update cactus time uniform
   useFrame(
@@ -45,7 +50,7 @@ export function WobbleMesh(props) {
       (uTime.current.value = clock.elapsedTime * 1000 + timeFrequency)
   );
   return (
-    <group {...props} dispose={null}>
+    <group {...props}  dispose={null}>
       <mesh
         castShadow
         geometry={geometry}

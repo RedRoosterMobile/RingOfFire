@@ -34,14 +34,15 @@ import Tint from './Tint';
 //import Cactus from './Cactus';
 import WobbleMesh, { RandomCacti } from './Cactus';
 import { MyCustomEffect } from './MyCustomEffect';
+import { Monument } from './Monument';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
   return (
     <>
       <EffectComposer>
+      <WaterEffect />
         <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
-
         <Bloom
           blendFunction={BlendFunction.ADD}
           intensity={20}
@@ -114,6 +115,7 @@ const Terrain = () => {
           attach="material"
           color="gray"
           map={colors}
+          aoMap={colors}
           metalness={0.2}
           normalMap={normals}
           displacementMap={height}
@@ -121,13 +123,11 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
-      <RandomCacti />
+      <RandomCacti amount={15} />
     </group>
   );
 };
-/*
- 
-*/
+
 const Ground = () => {
   const groundRef = useRef();
 
@@ -143,25 +143,7 @@ const Ground = () => {
     </mesh>
   );
 };
-/**
- * 
- * @returns 
-  <meshStandardMaterial
-          emissive="#8FBC8F"
-          emissiveIntensity={0.01}
-          toneMapped={true}
-          attach="material"
-          color="white"
-          map={colors}
-          metalness={0.2}
-          normalMap={normals}
-          displacementMap={height}
-          displacementScale={50}
-          displacementBias={2}
-          clipShadows={true}
-          receiveShadow={true}
-        />
- */
+
 export default function Jellyfish() {
   const canvasRef = useRef();
   const [fxReady, setFxReady] = useState({});
@@ -191,10 +173,11 @@ export default function Jellyfish() {
         // color exponential
         // <fogExp2 attach="fog" args={['#000080', 0.025]} />
         // <fogExp2 attach="fog" args={['#000080', 0.025]} />
+        //  <fogExp2 attach="fog" args={['#000080', 0.025]} />
       }}
     >
       <color attach="background" args={[0x191970]} />
-      <fogExp2 attach="fog" args={['#000080', 0.025]} />
+     
 
       <group>
         <pointLight
@@ -203,27 +186,28 @@ export default function Jellyfish() {
           position={[-10, 40, -5]}
           castShadow
         />
-          <directionalLight
-        position={[0, 1, 0]}
-        castShadow
-        shadow-mapSize-height={1024}
-        shadow-mapSize-width={1024}
-        shadow-radius={10}
-        shadow-bias={-0.0001}
-      />
+        <directionalLight
+          position={[0, 1, 0]}
+          castShadow
+          shadow-mapSize-height={1024}
+          shadow-mapSize-width={1024}
+          shadow-radius={10}
+          shadow-bias={-0.0001}
+        />
         <ambientLight ref={ambientRef} intensity={0.02} />
         <Shark position={[0, 0, -10]} />
-        <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
+        <Monument/>
         <Ground />
         <Terrain />
         <OrbitControls />
       </group>
-      <R3fEffects />
+      
       <Stats />
     </Canvas>
   );
 }
 /*
+<Jellyfish1 enabled={true} position={[-5, 15, -10]} />
 <Jellyfish1 enabled={true} />
 
 <Shark position={[0, 0, -10]} />

@@ -25,11 +25,12 @@ const fragmentShader = glsl`
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
 //void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
     // dunno..
+    /*
     vec2 aspectCorrection = vec2(1.0, aspect);
     const float depth = 1.;
     float viewZ = perspectiveDepthToViewZ(depth, cameraNear, cameraFar);
 		float linearDepth = viewZToOrthographicDepth(viewZ, cameraNear, cameraFar);
-
+    */
     
     //vec2 vUv = uv.xy;
     float factor=1.0; // <-1.5
