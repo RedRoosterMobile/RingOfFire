@@ -18,6 +18,7 @@ import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { Quaternion } from 'three';
+import { useSpring, animated, config } from '@react-spring/three';
 
 export function Shark(props) {
   const group = useRef();
@@ -33,36 +34,41 @@ export function Shark(props) {
     animationAction.play();
   });
   let time = 0;
-  // complicated way: https://www.html5gamedevs.com/topic/39335-make-sprite-follow-cursor-including-rotating-it-but-in-steps/
+  // complicated way of rotating:
+  // https://www.html5gamedevs.com/topic/39335-make-sprite-follow-cursor-including-rotating-it-but-in-steps/
+  //https://codesandbox.io/s/react-spring-looping-gmlq8?from-embed
+  /*const { param } = useSpring({
+    from: {param:0},
+    to: {param:5},
+    config: config.wobbly,
+    reset: true,
+  });*/
+  const elongationUpDown = 0.01;
+  let elongationUpDownDelta = 0;
 
-  let quaternion = new Quaternion();
+  const elongationLeftRight = 0.1;
+  let elongationLeftRightDelta = 0;
 
   useFrame(
     (gl, delta) => {
-      //quaternion.setFromAxisAngle([0,0,0], Math.PI);
-      //console.log(gl.clock);
-      //console.log(innerGroup.current.rotation);
-      time += delta ;
-      // todo: RTFM
-      // https://dev.to/keefdrive/crash-course-in-interactive-3d-animation-with-react-three-fiber-and-react-spring-2dj
-
+      time += delta;
+      elongationUpDownDelta =  elongationUpDown * Math.sin(time);
+      elongationLeftRightDelta =  elongationUpDown * Math.sin(time);
+      //console.log(param);
+      innerGroup.current.position.y = innerGroup.current.position.y+ elongationUpDownDelta;
+      //console.log(param);
+      innerGroup.current.position.z = innerGroup.current.position.z+ elongationLeftRightDelta;
       group.current.rotation.y = group.current.rotation.y - delta/5; //1*Math.cos(time) + 0;
-      //group.current.rotation.z +=delta//1*Math.sin(time) + 0;
-      //innerGroup.current.position.x =10*Math.cos(time) + 0;
-      //innerGroup.current.position.z =10*Math.sin(time) + 0;
-      //innerGroup.current.rotation.setFromVector3([0,0,0])
-      //innerGroup.current.rotation.setFrom
-      //innerGroup.lookAt([0,0,0]);
     },
     [group]
   );
 
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group name="outer-group" ref={group} {...props} dispose={null}>
       <group name="Sketchfab_model" scale={1}>
-        <group
+        <animated.group
           ref={innerGroup}
-          name="Carribean_Reef_Shark_Armature_33"
+          name="inner-group"
           scale={10}
           position={[0, 0, 100]}
         >
@@ -80,7 +86,7 @@ export function Shark(props) {
             skeleton={nodes.Object_8.skeleton}
             castShadow
           />
-        </group>
+        </animated.group>
       </group>
     </group>
   );
