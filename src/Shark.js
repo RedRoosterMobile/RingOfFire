@@ -24,41 +24,27 @@ export function Shark(props) {
   );
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
-    console.log('actions', actions.Action);
     const animationAction = actions.Action;
     animationAction.play();
   });
   return (
     <group ref={group} {...props} dispose={null}>
-      <group name="Sketchfab_Scene">
-        <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, 0]} scale={10}>
-          <group name="root">
-            <group name="GLTF_SceneRootNode" rotation={[Math.PI / 2, 0, 0]}>
-              <group
-                name="Carribean_Reef_Shark_Armature_33"
-                position={[0.17, 0, 0]}
-              >
-                <group name="GLTF_created_0">
-                  <primitive object={nodes.GLTF_created_0_rootJoint} />
-                  <group name="Carribean_Reef_Shark_32" />
-                  <skinnedMesh
-                    name="Object_7"
-                    geometry={nodes.Object_7.geometry}
-                    material={materials.Diffuse_Eye}
-                    skeleton={nodes.Object_7.skeleton}
-                  />
-                  <skinnedMesh
-                    name="Object_8"
-                    geometry={nodes.Object_8.geometry}
-                    material={materials.CRS_Material}
-                    skeleton={nodes.Object_8.skeleton}
-                    castShadow
-                    
-                  />
-                </group>
-              </group>
-            </group>
-          </group>
+      <group name="Sketchfab_model" scale={10}>
+        <group name="Carribean_Reef_Shark_Armature_33" position={[0.17, 0, 0]}>
+          <primitive object={nodes.GLTF_created_0_rootJoint} />
+          <skinnedMesh
+            name="Object_7"
+            geometry={nodes.Object_7.geometry}
+            material={materials.Diffuse_Eye}
+            skeleton={nodes.Object_7.skeleton}
+          />
+          <skinnedMesh
+            name="Object_8"
+            geometry={nodes.Object_8.geometry}
+            material={materials.CRS_Material}
+            skeleton={nodes.Object_8.skeleton}
+            castShadow
+          />
         </group>
       </group>
     </group>
