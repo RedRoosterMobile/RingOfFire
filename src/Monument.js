@@ -45,7 +45,6 @@ export function Monument({ amount = 25 }) {
  */
 export function AMonument(props) {
   const { scale, geometry, rotation } = props;
-  const uTime = useRef({ value: 0.0 });
   return (
     <group {...props} dispose={null}>
       <mesh

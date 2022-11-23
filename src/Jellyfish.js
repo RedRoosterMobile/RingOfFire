@@ -35,6 +35,7 @@ import Tint from './Tint';
 import WobbleMesh, { RandomCacti } from './Cactus';
 import { MyCustomEffect } from './MyCustomEffect';
 import { Monument } from './Monument';
+import { Seaweed } from './Seaweed';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
@@ -110,7 +111,7 @@ const Terrain = () => {
         position={[0, -12, 0]}
         receiveShadow
       >
-        <planeBufferGeometry args={[256, 256, 2096, 2096]} />
+        <planeBufferGeometry args={[256, 256, 512, 512]} />
         <meshStandardMaterial
           attach="material"
           color="gray"
@@ -123,10 +124,12 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
-      <RandomCacti amount={15} />
+      
+      <Seaweed amount={15}/>
     </group>
   );
 };
+// <RandomCacti amount={15} />
 
 const Ground = () => {
   const groundRef = useRef();
