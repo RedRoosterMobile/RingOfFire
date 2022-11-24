@@ -215,15 +215,15 @@ export default function Jellyfish() {
           intensity={1.8}
           position={[-10, 40, -5]}
           castShadow
-          shadowMapWidth={2048}
-          shadowMapHeight={2048}
+          shadowMapWidth={2048*2}
+          shadowMapHeight={2048*2}
         />
 
         <ambientLight ref={ambientRef} intensity={0.02} />
         <Shark position={[0, 0, 0]} />
         <Terrain/>
         <Ground />
-        <MantaRay position={[0, 10, 0]} />
+        <MantaRay position={[10, 20, 0]} />
 
         <OrbitControls />
       </group>

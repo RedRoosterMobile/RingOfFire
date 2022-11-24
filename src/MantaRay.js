@@ -6,48 +6,61 @@ source: https://sketchfab.com/3d-models/low-poly-mantaray-62ccfb67f0d9476d8857fc
 title: Low-Poly Mantaray
 */
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { MeshStandardMaterial } from 'three';
 
+const CHILL_FACTOR = 0.1;
 const MODEL = '/models/manta_ray_bubble.glb';
 export function MantaRay(props) {
   const group = useRef();
   const { nodes, materials, animations } = useGLTF(MODEL);
+  animations[0].duration *= CHILL_FACTOR;
+  for (let i = 0; i < animations[0].tracks.length; i++) {
+    for (let j = 0; j < animations[0].tracks[i].times.length; j++) {
+      animations[0].tracks[i].times[j] *= CHILL_FACTOR;
+    }
+  }
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
-    const chillFactor = 1.5;
-    animations[0].duration *= chillFactor;
-    for (let i = 0; i < animations[0].tracks.length; i++) {
-      for (let j = 0; j < animations[0].tracks[i].times.length; j++) {
-        animations[0].tracks[i].times[j] *= chillFactor;
-      }
-    }
     const animationAction = actions['Swimming'];
     animationAction.play();
   });
+  const outlineMaterial = useMemo(() => {
+    return materials.Rausku_outline;
+  });
+  /*
+  const speed = 1;
+  useFrame(
+    (state) =>
+      material && (material.time = state.clock.getElapsedTime() * speed)
+  );*/
+  const justFish = true;
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Sketchfab_model" scale={2} rotation={[-Math.PI / 2, 0, 0]}>
         <group name="Root">
           <group name="Rausku_armature">
             <primitive object={nodes.Rausku_armature_rootJoint} />
-            <group name="Rausku_mesh" />
-            <skinnedMesh
-              name="Rausku_mesh_0"
-              geometry={nodes.Rausku_mesh_0.geometry}
-              material={materials.Rausku_texture}
-              skeleton={nodes.Rausku_mesh_0.skeleton}
-              castShadow
-            />
-            <skinnedMesh
-              name="Rausku_mesh_1"
-              geometry={nodes.Rausku_mesh_1.geometry}
-              material={materials.Rausku_outline}
-              skeleton={nodes.Rausku_mesh_1.skeleton}
-              castShadow
-            />
+            {!justFish && (
+              <group name="Rausku_mesh">
+                <skinnedMesh
+                  name="Rausku_mesh_0"
+                  geometry={nodes.Rausku_mesh_0.geometry}
+                  material={materials.Rausku_texture}
+                  skeleton={nodes.Rausku_mesh_0.skeleton}
+                  castShadow
+                />
+                <skinnedMesh
+                  name="Rausku_mesh_1"
+                  geometry={nodes.Rausku_mesh_1.geometry}
+                  material={outlineMaterial}
+                  skeleton={nodes.Rausku_mesh_1.skeleton}
+                  castShadow
+                />
+              </group>
+            )}
           </group>
 
           <group name="Fish_Armature">
@@ -56,7 +69,7 @@ export function MantaRay(props) {
             <skinnedMesh
               name="Fish_mesh_0"
               geometry={nodes.Fish_mesh_0.geometry}
-              material={materials.Rausku_outline}
+              material={outlineMaterial}
               skeleton={nodes.Fish_mesh_0.skeleton}
               castShadow
             />
@@ -67,7 +80,7 @@ export function MantaRay(props) {
             <skinnedMesh
               name="Fish_mesh001_0"
               geometry={nodes.Fish_mesh001_0.geometry}
-              material={materials.Rausku_outline}
+              material={outlineMaterial}
               skeleton={nodes.Fish_mesh001_0.skeleton}
               castShadow
             />
@@ -78,7 +91,7 @@ export function MantaRay(props) {
             <skinnedMesh
               name="Fish_mesh002_0"
               geometry={nodes.Fish_mesh002_0.geometry}
-              material={materials.Rausku_outline}
+              material={outlineMaterial}
               skeleton={nodes.Fish_mesh002_0.skeleton}
               castShadow
             />
