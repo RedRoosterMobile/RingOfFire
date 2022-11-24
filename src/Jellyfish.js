@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 //import { LavaMaterial } from './LavaMaterial';
 import { BlurPass, BlendFunction, Resizer, KernelSize } from 'postprocessing';
-import { useSpring, animated, config } from "@react-spring/three";
+import { useSpring, animated, config } from '@react-spring/three';
 
 extend({ Selection });
 import {
@@ -39,13 +39,14 @@ import { MyCustomEffect } from './MyCustomEffect';
 import { Monument } from './Monument';
 import { Seaweed } from './Seaweed';
 import { Rocks } from './Rock';
+import { SeaweedArmature } from './SeaweedArmature';
+import { MantaRay } from './MantaRay';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
   return (
     <>
       <EffectComposer>
-        
         <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
         <Bloom
           blendFunction={BlendFunction.ADD}
@@ -126,12 +127,14 @@ const Terrain = () => {
           displacementBias={2}
         />
       </mesh>
-      <Monument  amount={50}/>
+      <Monument amount={50} />
       <Seaweed amount={20} />
-      <Rocks amount={2}/>
+      <SeaweedArmature position={[1, 1, 1]} />
+      <Rocks amount={2} />
     </group>
   );
 };
+// lighting tutorial https://www.youtube.com/watch?v=T6PhV4Hz0u4
 // <RandomCacti amount={15} />
 
 const Ground = () => {
@@ -156,6 +159,7 @@ export default function Jellyfish() {
 
   const ambientRef = useRef();
   const pointLightRef = useRef();
+
   // https://docs.pmnd.rs/react-three-fiber/advanced/scaling-performance
   return (
     <Canvas
@@ -163,42 +167,64 @@ export default function Jellyfish() {
       //frameloop="demand"
       ref={canvasRef}
       dpr={[1, 2]}
-      camera={{ fov: 100, position: [0, 0, 15] }}
-      //shadows={THREE.VSMShadowMap}
-      shadows
+      shadows={{ type: THREE.PCFSoftShadowMap }}
+      camera={{ fov: 88, position: [0, 15, 0] }}
       onCreated={({ gl, scene, camera, size }) => {
-        console.log('dunno');
+        console.log('Canvas:onCreated');
         //gl.toneMapping = THREE.ReinhardToneMapping;
         // navy 000080
         // midnigtblue 191970
         //gl.setClearColor(new THREE.Color('#191970'));
         //console.log(scene);
         setFxReady({ scene, gl, camera, size });
-        gl.shadowMap.autoUpdate = false;
-        gl.shadowMap.needsUpdate = true;
+        setTimeout(() => {
+          console.log('shadowStuff');
+          //gl.shadowMap.type = THREE.PCFSoftShadowMap;
+          console.log('pointLight: ',pointLightRef.current);
+          console.log('shadowMap: ',gl.shadowMap.type);
+          console.log('types:')
+          console.log('BasicShadowMap',THREE.BasicShadowMap);
+          console.log('PCFShadowMap',THREE.PCFShadowMap);
+          console.log('PCFSoftShadowMap',THREE.PCFSoftShadowMap);
+          console.log('VSMShadowMap',THREE.VSMShadowMap);
+          //gl.shadowMap.autoUpdate = false;
+          //gl.shadowMap.needsUpdate = true;
+        }, 2000);
+        //camera.lookAt(new THREE.Vector3(0, 0, 100));
+        
+        //https://threejs.org/docs/#api/en/renderers/WebGLRenderer.shadowMap
+        //gl.shadowMap.enabled=true;
+        //gl.shadowMap.type=THREE.VSMShadowMap;
+
         // do post fx here???
         // fog explained: https://www.youtube.com/watch?v=k1zGz55EqfU
         // color start end
         //<fog attach="fog" args={['blue', 1, 155]} />
         // color exponential
         // <fogExp2 attach="fog" args={['#000080', 0.025]} />
+        //scene.add( new THREE.GridHelper(10, 10) );
+        //<fogExp2 attach="fog" args={['#000080', 0.01]} />
+        //<gridHelper args={[128*2,128*2]}/>
       }}
     >
       <color attach="background" args={[0x191970]} />
-      <fogExp2 attach="fog" args={['#000080', 0.010]} />
+
       <group>
         <pointLight
           ref={pointLightRef}
           intensity={1.8}
           position={[-10, 40, -5]}
           castShadow
+          shadowMapWidth={2048}
+          shadowMapHeight={2048}
         />
-        
+
         <ambientLight ref={ambientRef} intensity={0.02} />
         <Shark position={[0, 0, 0]} />
-        <Terrain />
+        <Terrain/>
         <Ground />
-        <R3fEffects/>
+        <MantaRay position={[0, 10, 0]} />
+
         <OrbitControls />
       </group>
 

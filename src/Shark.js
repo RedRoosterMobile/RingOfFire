@@ -16,8 +16,8 @@ title: Model 54A - Caribbean Reef Shark
 
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-// import { Quaternion } from 'three';
+import { useFrame, useThree } from '@react-three/fiber';
+import { Quaternion, Vector3 } from 'three';
 // import { useSpring, animated, config } from '@react-spring/three';
 
 export function Shark(props) {
@@ -48,6 +48,8 @@ export function Shark(props) {
   let elongationLeftRightDelta = 0;
 
   let time = 0;
+  const sharkWorldPos = new Vector3();
+  const { gl, camera, size } = useThree();
   useFrame((gl, delta) => {
     time += delta;
     elongationUpDownDelta = elongationUpDown * Math.sin(time);
@@ -57,10 +59,23 @@ export function Shark(props) {
     innerGroup.current.position.z =
       innerGroup.current.position.z + elongationLeftRightDelta;
     group.current.rotation.y = group.current.rotation.y - delta / 5;
+
+    //console.log(group.current.position.x+innerGroup.current.position.x);
+    //console.log(group.current.position.z+innerGroup.current.position.z);
     // update shadow somehow..
     //sharkBodyRefShadow.current.position.z = Math.sin(time);
     //console.log(sharkBodyRefShadow.current.position.z);
+    //mesh.getWorldPosition()
+    // // IF I WANT TO HAVE THE POINTER LOOK AT THE CUBE
+    // THAT IS A CHILD OF THE GROUP, THEN I WILL WANT TO ADJUST
+    // FOR THAT FOR THIS THERE IS THE getWorldPosition Method
+    // https://dustinpfister.github.io/2021/05/13/threejs-object3d-lookat/
+    sharkBodyRefShadow.current.getWorldPosition(sharkWorldPos);
+    //camera.lookAt( sharkWorldPos );
   });
+  const rgbTo01 = (r, g, b) => {
+    return [r / 255, g / 255, b / 255];
+  };
 
   return (
     <group name="outer-group" ref={group} {...props} dispose={null}>
@@ -72,12 +87,21 @@ export function Shark(props) {
           position={[0, 0, 100]}
         >
           <primitive object={nodes.GLTF_created_0_rootJoint} />
-          <skinnedMesh
-            name="Object_7"
+          <mesh
+            name="glowing-eyes"
             geometry={nodes.Object_7.geometry}
-            material={materials.Diffuse_Eye}
+            //material={materials.Diffuse_Eye}
             skeleton={nodes.Object_7.skeleton}
-          />
+          >
+            <meshStandardMaterial
+              attach="material"
+              toneMapped={false}
+              emissive={true}
+              color={rgbTo01(255 * 1, 215, 0)}
+              roughness={0.0}
+              metalness={1.0}
+            />
+          </mesh>
           <skinnedMesh
             ref={sharkBodyRefShadow}
             name="Object_8"

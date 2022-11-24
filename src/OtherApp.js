@@ -57,7 +57,6 @@ function R3fEffects() {
 
 // https://onion2k.github.io/r3f-by-example/examples/materials/glowing-torus/
 function Lava() {
-  console.log('test');
   const shaderRef = useRef();
   const torusRef = useRef();
   const { width, height } = useThree((state) => state.viewport);
