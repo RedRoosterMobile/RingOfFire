@@ -10,8 +10,8 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { MeshStandardMaterial } from 'three';
-
-const CHILL_FACTOR = 0.1;
+import { rgbTo01 } from './helper';
+const CHILL_FACTOR = 1.3;
 const MODEL = '/models/manta_ray_bubble.glb';
 export function MantaRay(props) {
   const group = useRef();
@@ -36,7 +36,7 @@ export function MantaRay(props) {
     (state) =>
       material && (material.time = state.clock.getElapsedTime() * speed)
   );*/
-  const justFish = true;
+  const justFish = false;
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Sketchfab_model" scale={2} rotation={[-Math.PI / 2, 0, 0]}>
@@ -51,6 +51,11 @@ export function MantaRay(props) {
                   material={materials.Rausku_texture}
                   skeleton={nodes.Rausku_mesh_0.skeleton}
                   castShadow
+                  emissive={[200, 1.75, 0]}
+                  emissiveIntensity={100.1}
+                  toneMapped={false}
+                  material-color={[200, 1.75, 0]}
+                  metalness={1}
                 />
                 <skinnedMesh
                   name="Rausku_mesh_1"
@@ -58,6 +63,7 @@ export function MantaRay(props) {
                   material={outlineMaterial}
                   skeleton={nodes.Rausku_mesh_1.skeleton}
                   castShadow
+                  
                 />
               </group>
             )}
@@ -72,6 +78,11 @@ export function MantaRay(props) {
               material={outlineMaterial}
               skeleton={nodes.Fish_mesh_0.skeleton}
               castShadow
+              emissive={[2, 1.75, 0]}
+                  material-color={'navy'}
+                  emissiveIntensity={100.1}
+                  toneMapped={true}
+                  metalness={0.5}
             />
           </group>
           <group name="Fish_Armature001">

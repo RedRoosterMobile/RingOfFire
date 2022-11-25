@@ -29,6 +29,9 @@ import {
   Plane,
   Stats,
   Stars,
+  Edges,
+  Instances,
+  Instance,
 } from '@react-three/drei';
 import Glitch from './Glitch';
 import { WaterEffect } from './WaterEffect';
@@ -153,6 +156,29 @@ const Ground = () => {
   );
 };
 
+const DancingSpotlights = () => {
+  // TODO:
+  //
+  // frame:
+  // iterate colors (hue rotate?)
+  //
+  // animate angles (spring?)
+  // animate positions along paths (bezier?)
+  // general:
+  // texture projection (shader?)
+
+  return (
+    <spotLight
+      position={[0, 50, 0]}
+      castShadow
+      color={0xffffff}
+      angle={1.3}
+      decay={2}
+      penumbra={0.7}
+    />
+  );
+};
+
 export default function Jellyfish() {
   const canvasRef = useRef();
   const [fxReady, setFxReady] = useState({});
@@ -180,18 +206,18 @@ export default function Jellyfish() {
         setTimeout(() => {
           console.log('shadowStuff');
           //gl.shadowMap.type = THREE.PCFSoftShadowMap;
-          console.log('pointLight: ',pointLightRef.current);
-          console.log('shadowMap: ',gl.shadowMap.type);
-          console.log('types:')
-          console.log('BasicShadowMap',THREE.BasicShadowMap);
-          console.log('PCFShadowMap',THREE.PCFShadowMap);
-          console.log('PCFSoftShadowMap',THREE.PCFSoftShadowMap);
-          console.log('VSMShadowMap',THREE.VSMShadowMap);
+          console.log('pointLight: ', pointLightRef.current);
+          console.log('shadowMap: ', gl.shadowMap.type);
+          console.log('types:');
+          console.log('BasicShadowMap', THREE.BasicShadowMap);
+          console.log('PCFShadowMap', THREE.PCFShadowMap);
+          console.log('PCFSoftShadowMap', THREE.PCFSoftShadowMap);
+          console.log('VSMShadowMap', THREE.VSMShadowMap);
           //gl.shadowMap.autoUpdate = false;
           //gl.shadowMap.needsUpdate = true;
         }, 2000);
         //camera.lookAt(new THREE.Vector3(0, 0, 100));
-        
+
         //https://threejs.org/docs/#api/en/renderers/WebGLRenderer.shadowMap
         //gl.shadowMap.enabled=true;
         //gl.shadowMap.type=THREE.VSMShadowMap;
@@ -205,26 +231,38 @@ export default function Jellyfish() {
         //scene.add( new THREE.GridHelper(10, 10) );
         //<fogExp2 attach="fog" args={['#000080', 0.01]} />
         //<gridHelper args={[128*2,128*2]}/>
+        //<fogExp2 attach="fog" args={['#000080', 0.01]} />
       }}
     >
       <color attach="background" args={[0x191970]} />
-
+      
       <group>
         <pointLight
           ref={pointLightRef}
-          intensity={1.8}
-          position={[-10, 40, -5]}
+          //intensity={1.8}
+          intensity={0}
+          position={[0, 40, 0]}
           castShadow
-          shadowMapWidth={2048*2}
-          shadowMapHeight={2048*2}
+          shadowMapWidth={2048 * 2}
+          shadowMapHeight={2048 * 2}
+          decay={200}
         />
-
-        <ambientLight ref={ambientRef} intensity={0.02} />
+        <spotLight
+          position={[0, 50, 0]}
+          castShadow
+          color={0xffffff}
+          angle={0.3}
+          decay={2}
+          penumbra={0.7}
+        />
+        <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
+        <ambientLight ref={ambientRef} intensity={10.5} />
         <Shark position={[0, 0, 0]} />
-        <Terrain/>
+        
         <Ground />
-        <MantaRay position={[10, 20, 0]} />
+        
 
+        
         <OrbitControls />
       </group>
 
@@ -232,6 +270,10 @@ export default function Jellyfish() {
     </Canvas>
   );
 }
+// <MantaRay position={[10, 20, 0]} />
+// spotlight config https://threejs.org/examples/#webgl_lights_spotlight
+// really cool spotlights https://threejs.org/examples/?q=spotlight#webgl_lights_spotlights
+// <directionalLight position={[0, 40, 0]} intensity={0.2} decay={30}/>
 // <Terrain />
 /*
 <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
@@ -288,13 +330,7 @@ export default function Jellyfish() {
         noise={100}
         scale={[10, 10, 10]}
       />
-    radius?: number;
-    depth?: number;
-    count?: number;
-    factor?: number;
-    saturation?: number;
-    fade?: boolean;
-    speed?: number;
+
 
 
      <directionalLight
