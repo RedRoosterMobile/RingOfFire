@@ -103,7 +103,6 @@ class MyCustomEffectImpl extends Effect {
 // Effect component
 export const MyCustomEffect = forwardRef(
   ({ weights, param2, blendFunction = BlendFunction.NORMAL }, ref) => {
-    console.log('dfdf', weights);
     //WTF is wrong here with this fucking scope bullshit<111
     // i can't pass params to constructor, why the fuck not!!!
     _uWeights = weights; //new Uniform(new Vector3(weights[0],weights[1],weights[2]));
@@ -111,8 +110,6 @@ export const MyCustomEffect = forwardRef(
     _uParam2 = param2;
     //_uParam2 = param2;
     const effect = useMemo(() => {
-      console.log('memo');
-      console.log(weights[0]);
       _uWeights = weights; //new Uniform(new Vector3(weights[0],weights[1],weights[2]));
       _uBlendMode = blendFunction;
       return new MyCustomEffectImpl();

@@ -117,8 +117,8 @@ export default function Canvas() {
       side: THREE.BackSide
     });
 
-    //const sky = new THREE.Mesh(skyGeo, skyMat);
-    //scene.add(sky);
+    const sky = new THREE.Mesh(skyGeo, skyMat);
+    scene.add(sky);
 
     // アニメーション
     function tick() {

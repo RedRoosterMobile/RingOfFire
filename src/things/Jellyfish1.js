@@ -10,8 +10,6 @@ https://github.com/pmndrs/gltfjsx
 
 import React, { useRef, useEffect } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { act } from '@react-three/fiber';
-import { Select } from '@react-three/postprocessing';
 
 export function Jellyfish1(props) {
   const group = useRef();

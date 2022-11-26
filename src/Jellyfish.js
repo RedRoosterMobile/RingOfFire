@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, forwardRef, useMemo, Suspense } from 'react';
 import * as THREE from 'three';
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { BlendFunction } from 'postprocessing';
-
+import { useControls } from 'leva';
 import {
   EffectComposer,
   Bloom,
@@ -35,22 +35,95 @@ import { MantaRay } from './things/MantaRay';
 import { FishSwarm } from './things/fish-swarm/FishSwarm';
 import { BestBoids } from './things/BestBoids';
 
+import { v4 as uuidv4 } from 'uuid';
+const fragmentShader = `
+varying float vZ;
+varying vec2 vUv;
+// varying float vPulse;
+
+void main() {
+  // vec3 strength = vec3(vPulse, .05, .1);
+  gl_FragColor = vec4(vUv.yy, vUv.y * .5  + .5, 1.);
+}
+`;
+import glsl from 'babel-plugin-glsl/macro';
+import { Sky } from './Sky';
+
+const vertexShader = glsl`
+
+  uniform float uTime;
+  varying float vZ;
+
+  varying vec2 vUv;
+  varying float vPulse;
+
+  #pragma glslify: snoise4 = require(glsl-noise/simplex/4d.glsl);
+
+  void main() {
+    float noise = snoise4(vec4(normal * .5, uTime));
+    vec3 newPosition = position + noise * .14;
+    newPosition.y += sin(newPosition.x * 5.0 + uTime * 22.0) * .25;
+    
+    vUv = uv;
+    // vPulse = noise;
+
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(newPosition, 1.);
+  }
+`;
+
+const Sun = forwardRef(function Sun(props, forwardRef) {
+  useFrame(({ clock }) => {
+    forwardRef.current.position.x = Math.sin(clock.getElapsedTime()) * -8;
+    forwardRef.current.position.y = Math.cos(clock.getElapsedTime()) * -8;
+  });
+
+  return (
+    <mesh ref={forwardRef} position={[0, 0, -15]}>
+      <sphereGeometry args={[1, 36, 36]} />
+      <meshBasicMaterial color={'#00FF00'} />
+    </mesh>
+  );
+});
+
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
+  // <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
+  const sunRef = useRef();
+
+  const distance = 40;
   return (
     <>
-      <EffectComposer>
-        <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
-        <Bloom
+      <Suspense>
+        <Sun ref={sunRef} />
+        {sunRef.current && (
+          <EffectComposer multisampling={0}>
+         
+             <Bloom
           blendFunction={BlendFunction.ADD}
           intensity={20}
           luminanceThreshold={0.9}
           luminanceSmoothing={1.3}
         />
-      </EffectComposer>
+          </EffectComposer>
+        )}
+      </Suspense>
     </>
   );
 }
+/*
+ <Bloom
+          blendFunction={BlendFunction.ADD}
+          intensity={20}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={1.3}
+        />
+  <Bloom
+          blendFunction={BlendFunction.ADD}
+          intensity={20}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={1.3}
+        />
+*/
 /*<WaterEffect />
 <ChromaticAberration
           blendFunction={BlendFunction.ADD}
@@ -230,8 +303,8 @@ export default function Jellyfish() {
       <group>
         <pointLight
           ref={pointLightRef}
-          //intensity={1.8}
-          intensity={0}
+          intensity={1.8}
+          //intensity={0}
           position={[0, 40, 0]}
           castShadow
           shadowMapWidth={2048 * 2}
@@ -253,9 +326,9 @@ export default function Jellyfish() {
         <MantaRay position={[10, 20, 0]} />
         <Terrain />
         <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
-        <BestBoids position={[100, 200, 0]} />
+        <BestBoids position={[0, 25, 0]} />
         <OrbitControls />
-        
+        <Sky size={400} exponent={3}/>
       </group>
 
       <Stats />
