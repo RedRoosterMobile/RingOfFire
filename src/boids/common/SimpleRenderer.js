@@ -16,13 +16,13 @@ export default class SimpleRenderer {
     this.scene = aGroup;
     // this.scene.background = new THREE.Color(0xffffff);
 
-    this.entityGeometry = new THREE.BoxGeometry(1, 1, 2.5);
+    this.entityGeometry = new THREE.BoxGeometry(1, 1, 5.5);
     this.obstacleGeometry = new THREE.SphereGeometry(5, 15, 15);
     this.entityMaterial = new THREE.MeshNormalMaterial();
-
     this.obstacleMaterial = new THREE.MeshNormalMaterial();
 
     this.createGridVisual(this.boidsController.subDivisionCount);
+
 
     // create boundary
     const b = this.boidsController.getBoundary();
@@ -112,10 +112,11 @@ export default class SimpleRenderer {
           mesh.position.z + mesh.localVelocity.z,
         ];
       }
+      const farAway=3;
       mesh.lookAt(
-        mesh.position.x + mesh.localVelocity.x,
-        mesh.position.y + mesh.localVelocity.y,
-        mesh.position.z + mesh.localVelocity.z
+        (mesh.position.x + mesh.localVelocity.x)/farAway,
+        (mesh.position.y + mesh.localVelocity.y)/farAway,
+        (mesh.position.z + mesh.localVelocity.z)/farAway
       );
       /*
       mesh.lookAt(

@@ -46,6 +46,7 @@ import { SeaweedArmature } from './SeaweedArmature';
 import { MantaRay } from './MantaRay';
 import { FishSwarm } from './FishSwarm/FishSwarm';
 import { BetterBoids } from './boids/BetterBoids';
+import { BestBoids } from './BestBoids';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
@@ -220,7 +221,7 @@ export default function Jellyfish() {
           //gl.shadowMap.needsUpdate = true;
           setTimeout(()=>{
             console.log('waited another 4 sec..');
-            setIsReady(true);
+            //setIsReady(true);
 
           },4000);
           
@@ -269,7 +270,7 @@ export default function Jellyfish() {
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
         <ambientLight ref={ambientRef} intensity={10.2} />
         <Ground /> 
-       
+       <BestBoids/>
         {isReady &&  <BetterBoids position={[-128, 0, -128]}/>}
         <OrbitControls />
       </group>
