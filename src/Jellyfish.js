@@ -44,6 +44,8 @@ import { Seaweed } from './Seaweed';
 import { Rocks } from './Rock';
 import { SeaweedArmature } from './SeaweedArmature';
 import { MantaRay } from './MantaRay';
+import { FishSwarm } from './FishSwarm/FishSwarm';
+import { BetterBoids } from './boids/BetterBoids';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
@@ -150,7 +152,7 @@ const Ground = () => {
       position={[0, -0, 0]}
       receiveShadow
     >
-      <planeBufferGeometry args={[256, 256, 2096, 2096]} />
+      <planeBufferGeometry args={[256, 256, 1, 1]}  />
       <meshStandardMaterial color={'#C2B280'} />
     </mesh>
   );
@@ -182,6 +184,7 @@ const DancingSpotlights = () => {
 export default function Jellyfish() {
   const canvasRef = useRef();
   const [fxReady, setFxReady] = useState({});
+  const [isReady, setIsReady] = useState(false);
 
   const ambientRef = useRef();
   const pointLightRef = useRef();
@@ -202,7 +205,7 @@ export default function Jellyfish() {
         // midnigtblue 191970
         //gl.setClearColor(new THREE.Color('#191970'));
         //console.log(scene);
-        setFxReady({ scene, gl, camera, size });
+        
         setTimeout(() => {
           console.log('shadowStuff');
           //gl.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -215,6 +218,12 @@ export default function Jellyfish() {
           console.log('VSMShadowMap', THREE.VSMShadowMap);
           //gl.shadowMap.autoUpdate = false;
           //gl.shadowMap.needsUpdate = true;
+          setTimeout(()=>{
+            console.log('waited another 4 sec..');
+            setIsReady(true);
+
+          },4000);
+          
         }, 2000);
         //camera.lookAt(new THREE.Vector3(0, 0, 100));
 
@@ -232,9 +241,11 @@ export default function Jellyfish() {
         //<fogExp2 attach="fog" args={['#000080', 0.01]} />
         //<gridHelper args={[128*2,128*2]}/>
         //<fogExp2 attach="fog" args={['#000080', 0.01]} />
+        //<fogExp2 attach="fog" args={['#000080', 0.01]} />
+        //  <color attach="background" args={[0x191970]} />
       }}
     >
-      <color attach="background" args={[0x191970]} />
+      <color attach="background" args={[0xcccccc]} />
       
       <group>
         <pointLight
@@ -256,13 +267,10 @@ export default function Jellyfish() {
           penumbra={0.7}
         />
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
-        <ambientLight ref={ambientRef} intensity={10.5} />
-        <Shark position={[0, 0, 0]} />
-        
-        <Ground />
-        
-
-        
+        <ambientLight ref={ambientRef} intensity={10.2} />
+        <Ground /> 
+       
+        {isReady &&  <BetterBoids position={[-128, 0, -128]}/>}
         <OrbitControls />
       </group>
 
@@ -270,6 +278,10 @@ export default function Jellyfish() {
     </Canvas>
   );
 }
+{/* <Shark position={[0, 0, 0]} />
+<MantaRay position={[10, 20, 0]} />
+<Terrain /> */}
+// <FishSwarm position={[0,30,0]}/>
 // <MantaRay position={[10, 20, 0]} />
 // spotlight config https://threejs.org/examples/#webgl_lights_spotlight
 // really cool spotlights https://threejs.org/examples/?q=spotlight#webgl_lights_spotlights

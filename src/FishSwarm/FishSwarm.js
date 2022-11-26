@@ -7,15 +7,22 @@ import React, { useState } from 'react';
 import { FishesComponent } from './Fishes';
 
 const outerBoundsDistance = 50;
-export function FishSwarm() {
+export function FishSwarm(props) {
   // for slider..
+  const [boxSize, setBoxSize] = useState(5);
+  const [outerBoundsForceScaling, setOuterBoundsForceScaling] = useState(10);
+  const [alignmentForeScaling, setAlignmentForeScaling] = useState(6);
+  const [cohesionForceScaling, setCohesionForceScaling] = useState(0.8);
+  const [separationForceScaling, setSeparationForceScaling] = useState(0.64);
+  /* // default
   const [boxSize, setBoxSize] = useState(5);
   const [outerBoundsForceScaling, setOuterBoundsForceScaling] = useState(0.5);
   const [alignmentForeScaling, setAlignmentForeScaling] = useState(6);
   const [cohesionForceScaling, setCohesionForceScaling] = useState(0.8);
   const [separationForceScaling, setSeparationForceScaling] = useState(0.1);
+  */
   return (
-    <>
+    <group {...props}>
       <mesh>
         <sphereGeometry args={[outerBoundsDistance, 32, 32]} />
         <meshBasicMaterial color="green" transparent opacity={0.1} wireframe />
@@ -27,7 +34,7 @@ export function FishSwarm() {
         cohesionForceScaling={cohesionForceScaling}
         separationForceScaling={separationForceScaling}
       />
-    </>
+    </group>
   );
 }
 

@@ -1,4 +1,4 @@
-import niceColors from 'nice-color-palettes';
+import niceColors from 'nice-color-palettes/100';
 import * as THREE from 'three';
 /*
 type Fish = {
@@ -8,6 +8,7 @@ type Fish = {
 };
 */
 
+// once
 function createFishSquare(length) {
   const totalCount = length ** 3;
   const maxSpeed = 10;
@@ -20,7 +21,8 @@ function createFishSquare(length) {
       (Math.floor(index / length ** 2) % length) + hardOffset
     );
     return {
-      color: niceColors[17][Math.floor(Math.random() * 5)],
+      color: niceColors[12][Math.floor(Math.random() * 5)],
+      //color: 'navy',
       velocity: new THREE.Vector3(
         Math.random() - 0.5,
         Math.random() - 0.5,
