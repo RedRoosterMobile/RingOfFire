@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import Boid from "../libs/Boid";
-import FishGeometry from "../libs/FishGeometry";
+import Boid from "./things/best-boids-lib/Boid";
+import FishGeometry from "./things/best-boids-lib/FishGeometry";
 
 export default function Canvas() {
   const ref = useRef<HTMLDivElement>(null);

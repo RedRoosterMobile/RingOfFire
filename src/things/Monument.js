@@ -1,30 +1,24 @@
 import { useRef, useMemo } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { rgbTo01, randomIntFromInterval, getRandomFloat } from '../helper';
 
-const MODEL = '/models/good/rock.obj';
-function randomIntFromInterval(min, max) {
-  // min and max included
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+const MODEL = '/models/good/Monument.obj';
 
-function getRandomFloat(min, max, decimals = 2) {
-  const str = (Math.random() * (max - min) + min).toFixed(decimals);
-  return parseFloat(str);
-}
 // add more params
-export function Rocks({ amount = 25 }) {
+export function Monument({ amount = 25 }) {
   const geom = useMemo(
     () => useLoader(OBJLoader, MODEL).children[0].geometry,
     []
   );
+
   const data = useMemo(() => {
     return new Array(amount).fill().map((_, i) => ({
       x: randomIntFromInterval(-128, 128),
-      y: 0-3,
+      y: -10,
       z: randomIntFromInterval(-128, 128),
-      scale: getRandomFloat(2,3),
-      rotation: [0,  getRandomFloat(Math.PI / 1, 2 * Math.PI), 0],
+      scale: 2,
+      rotation: [0, Math.PI / getRandomFloat(Math.PI / 1, 2 * Math.PI), 0],
       geometry: geom,
       elevationOffsetMultiplier: randomIntFromInterval(2, 5),
       timeFrequency: randomIntFromInterval(22, 44) / 10000,
@@ -32,7 +26,7 @@ export function Rocks({ amount = 25 }) {
   }, [geom]);
 
   return data.map((props, i) => (
-    <ARock key={i} {...props} position={[props.x, props.y, props.z]} />
+    <AMonument key={i} {...props} position={[props.x, props.y, props.z]} />
   ));
 }
 
@@ -45,7 +39,7 @@ export function Rocks({ amount = 25 }) {
  * @param {Vector3} position [0,0,0]
  * @returns
  */
-export function ARock(props) {
+export function AMonument(props) {
   const { scale, geometry, rotation } = props;
   return (
     <group {...props} dispose={null}>
@@ -53,12 +47,15 @@ export function ARock(props) {
         castShadow
         geometry={geometry}
         scale={scale}
-        position={[0, 0, 0]}
+        position={[0, 10 / scale, 0]}
       >
         <meshStandardMaterial
-          color="darkgrey"
-          roughness={0.9}
-          metalness={0.1}
+          attach="material"
+          toneMapped={false}
+          emissive={true}
+          color={rgbTo01(255 * 1, 215, 0)}
+          roughness={0.3}
+          metalness={1.0}
         />
       </mesh>
     </group>

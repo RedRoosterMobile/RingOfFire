@@ -1,27 +1,16 @@
-import { useRef, Suspense, useEffect, useMemo, useState } from 'react';
+import { useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
-//import { LavaMaterial } from './LavaMaterial';
-import { BlurPass, BlendFunction, Resizer, KernelSize } from 'postprocessing';
-import { useSpring, animated, config } from '@react-spring/three';
+import { Canvas } from '@react-three/fiber';
+import { BlendFunction } from 'postprocessing';
 
-extend({ Selection });
 import {
   EffectComposer,
   Bloom,
   GodRays,
-  Scanline,
   Vignette,
-  Outline,
-  ChromaticAberration,
-  ColorDepth,
-  DepthOfField,
-  SelectiveBloom,
-  Select,
-  Selection,
 } from '@react-three/postprocessing';
-import { Jellyfish1 } from './Jellyfish1';
-import { Shark } from './Shark';
+import { Jellyfish1 } from './things/Jellyfish1';
+import { Shark } from './things/Shark';
 import {
   useTexture,
   OrbitControls,
@@ -33,20 +22,18 @@ import {
   Instances,
   Instance,
 } from '@react-three/drei';
-import Glitch from './Glitch';
-import { WaterEffect } from './WaterEffect';
-import Tint from './Tint';
-//import Cactus from './Cactus';
-import WobbleMesh, { RandomCacti } from './Cactus';
-import { MyCustomEffect } from './MyCustomEffect';
-import { Monument } from './Monument';
-import { Seaweed } from './Seaweed';
-import { Rocks } from './Rock';
-import { SeaweedArmature } from './SeaweedArmature';
-import { MantaRay } from './MantaRay';
-import { FishSwarm } from './FishSwarm/FishSwarm';
-import { BetterBoids } from './boids/BetterBoids';
-import { BestBoids } from './BestBoids';
+import Glitch from './post/Glitch';
+import { WaterEffect } from './r3f-effects/WaterEffect';
+import Tint from './failed_attempts_graveyard/Tint';
+import WobbleMesh, { RandomCacti } from './things/Cactus';
+import { MyCustomEffect } from './r3f-effects/MyCustomEffect';
+import { Monument } from './things/Monument';
+import { Seaweed } from './things/Seaweed';
+import { Rocks } from './things/Rock';
+import { SeaweedArmature } from './things/SeaweedArmature';
+import { MantaRay } from './things/MantaRay';
+import { FishSwarm } from './things/fish-swarm/FishSwarm';
+import { BestBoids } from './things/BestBoids';
 
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
@@ -57,7 +44,7 @@ function R3fEffects() {
         <Bloom
           blendFunction={BlendFunction.ADD}
           intensity={20}
-          luminanceThreshold={1}
+          luminanceThreshold={0.9}
           luminanceSmoothing={1.3}
         />
       </EffectComposer>
@@ -87,18 +74,16 @@ disableRenderPass={false}
 */
 function Sphere(props) {
   return (
-    <Select enabled={props.enabled}>
-      <mesh position={[-10, +10, 0]} scale={10} rotation={[0, 0, 0]} castShadow>
-        <sphereGeometry attach="geometry" args={[1, 16, 16]} />
-        <meshStandardMaterial
-          attach="material"
-          color="white"
-          transparent
-          roughness={0.1}
-          metalness={0.1}
-        />
-      </mesh>
-    </Select>
+    <mesh position={[-10, +10, 0]} scale={10} rotation={[0, 0, 0]} castShadow>
+      <sphereGeometry attach="geometry" args={[1, 16, 16]} />
+      <meshStandardMaterial
+        attach="material"
+        color="white"
+        transparent
+        roughness={0.1}
+        metalness={0.1}
+      />
+    </mesh>
   );
 }
 const Terrain = () => {
@@ -153,7 +138,7 @@ const Ground = () => {
       position={[0, -0, 0]}
       receiveShadow
     >
-      <planeBufferGeometry args={[256, 256, 1, 1]}  />
+      <planeBufferGeometry args={[256, 256, 1, 1]} />
       <meshStandardMaterial color={'#C2B280'} />
     </mesh>
   );
@@ -184,7 +169,6 @@ const DancingSpotlights = () => {
 
 export default function Jellyfish() {
   const canvasRef = useRef();
-  const [fxReady, setFxReady] = useState({});
   const [isReady, setIsReady] = useState(false);
 
   const ambientRef = useRef();
@@ -206,9 +190,8 @@ export default function Jellyfish() {
         // midnigtblue 191970
         //gl.setClearColor(new THREE.Color('#191970'));
         //console.log(scene);
-        
+
         setTimeout(() => {
-          console.log('shadowStuff');
           //gl.shadowMap.type = THREE.PCFSoftShadowMap;
           console.log('pointLight: ', pointLightRef.current);
           console.log('shadowMap: ', gl.shadowMap.type);
@@ -219,12 +202,10 @@ export default function Jellyfish() {
           console.log('VSMShadowMap', THREE.VSMShadowMap);
           //gl.shadowMap.autoUpdate = false;
           //gl.shadowMap.needsUpdate = true;
-          setTimeout(()=>{
+          setTimeout(() => {
             console.log('waited another 4 sec..');
             //setIsReady(true);
-
-          },4000);
-          
+          }, 4000);
         }, 2000);
         //camera.lookAt(new THREE.Vector3(0, 0, 100));
 
@@ -241,8 +222,6 @@ export default function Jellyfish() {
         //scene.add( new THREE.GridHelper(10, 10) );
         //<fogExp2 attach="fog" args={['#000080', 0.01]} />
         //<gridHelper args={[128*2,128*2]}/>
-        //<fogExp2 attach="fog" args={['#000080', 0.01]} />
-        //<fogExp2 attach="fog" args={['#000080', 0.01]} />
         //  <color attach="background" args={[0x191970]} />
       }}
     >
@@ -269,13 +248,14 @@ export default function Jellyfish() {
         />
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
         <ambientLight ref={ambientRef} intensity={0.2} />
-        <Ground /> 
+        <Ground />
         <Shark position={[0, 0, 0]} />
-<MantaRay position={[10, 20, 0]} />
-<Terrain />
-       <BestBoids position={[100,200,0]}/>
-        {isReady &&  <BetterBoids position={[-128, 0, -128]}/>}
+        <MantaRay position={[10, 20, 0]} />
+        <Terrain />
+        <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
+        <BestBoids position={[100, 200, 0]} />
         <OrbitControls />
+        
       </group>
 
       <Stats />
@@ -306,7 +286,7 @@ export default function Jellyfish() {
 />*/
 /** <Sphere/>
  * // <Tint />
- *   {fxReady && <Glitch {...fxReady} />}
+
  * <Sphere enabled={true} position={[0, 0, 1]} />
  * <R3fEffects/>
      <Glitch />
@@ -330,7 +310,7 @@ export default function Jellyfish() {
 //<Ground />
 //<Sphere position={[0, 0, 1]} />
 // <WaterEffects {...fxReady} />
-// <OldEffects scene={fxReady} />
+
 //   {canvasRef && canvasRef.current && <OldEffects2 scene={canvasRef} />}
 
 /*       <R3fEffects /><fog attach="fog" args={['#000030', 50, 190]} />

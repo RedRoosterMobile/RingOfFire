@@ -100,7 +100,6 @@ function FishesComponent({
       ),
     [fishes]
   );
-  console.log(colorArray);
   const instancedMeshRef = useRef(null);
   useFrame((_, delta) => {
     if (instancedMeshRef.current === null) return;

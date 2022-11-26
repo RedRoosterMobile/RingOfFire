@@ -30,7 +30,7 @@ export default class Boid {
           this.position.x,
           //-this.worldSize.height,
           // stop before hitting the ground..
-          -this.worldSize.height/10,
+          -this.worldSize.height/3,
           this.position.z
         );
         this.vector = this.avoid(this.vector);

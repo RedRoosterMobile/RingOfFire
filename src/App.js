@@ -2,8 +2,8 @@ import { useRef, Suspense, useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 import { WaveMaterial } from './failed_attempts_graveyard/WaveMaterial';
-import { LavaMaterial } from './LavaMaterial';
-import { FbmMaterial } from './FbmMaterial';
+import { LavaMaterial } from './materials/LavaMaterial';
+import { FbmMaterial } from './materials/FbmMaterial';
 import {
   useTexture,
   shaderMaterial,
@@ -31,8 +31,8 @@ import {
   ColorDepth,
 } from '@react-three/postprocessing';
 
-import { MyCustomEffect } from './MyCustomEffect';
-import { WaterEffect } from './WaterEffect';
+import { MyCustomEffect } from './r3f-effects/MyCustomEffect';
+import { WaterEffect } from './r3f-effects/WaterEffect';
 import { BlurPass, BlendFunction } from 'postprocessing';
 import { FilmPass } from 'three/examples/jsm/postprocessing/FilmPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';

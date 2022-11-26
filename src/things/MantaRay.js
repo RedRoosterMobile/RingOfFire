@@ -10,7 +10,7 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import { MeshStandardMaterial } from 'three';
-import { rgbTo01 } from './helper';
+import { rgbTo01 } from '../helper';
 const CHILL_FACTOR = 1.3;
 const MODEL = '/models/manta_ray_bubble.glb';
 export function MantaRay(props) {
@@ -51,10 +51,7 @@ export function MantaRay(props) {
                   material={materials.Rausku_texture}
                   skeleton={nodes.Rausku_mesh_0.skeleton}
                   castShadow
-                  emissive={[200, 1.75, 0]}
-                  emissiveIntensity={100.1}
-                  toneMapped={false}
-                  material-color={[200, 1.75, 0]}
+                  
                   metalness={1}
                 />
                 <skinnedMesh
@@ -63,7 +60,6 @@ export function MantaRay(props) {
                   material={outlineMaterial}
                   skeleton={nodes.Rausku_mesh_1.skeleton}
                   castShadow
-                  
                 />
               </group>
             )}
