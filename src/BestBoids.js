@@ -1,11 +1,10 @@
-import { useRef, useMemo,useEffect } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import * as THREE from "three";
-import Boid from "./libs/Boid";
-import FishGeometry from "./libs/FishGeometry";
-
-
+import * as THREE from 'three';
+import Boid from './libs/Boid';
+import FishGeometry from './libs/FishGeometry';
+import { Vector3 } from 'three';
 
 const MODEL = '/models/good/seaweed.obj';
 function randomIntFromInterval(min, max) {
@@ -19,59 +18,57 @@ function getRandomFloat(min, max, decimals) {
 // add more params
 
 /**
- * 
+ *
  * idea:
  * add a custom center and x,y range
  * so we can make things like tall in the middle and small on the outside
  * by calculating the distance from the center
- * 
+ *
  */
-export function BestBoids({ fishNum = 100 }) {
-  const groupRef= useRef();
+export function BestBoids(props) {
+  const groupRef = useRef();
   // 魚群を作成
   const fishes = [];
   const boids = [];
-  //const fishNum = 100;
-  const geometry = new FishGeometry(1);
-  const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  for (var i = 0; i < fishNum; i++) {
-    boids[i] = new Boid(4, 0.05);
+  const fishNum = 200;
+  const geometry = new FishGeometry(2);
+
+  const material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness:0.9, roughness:0.3 });
+
+  const offset = new Vector3(...(props.position || [0, 0, 0]));
+  for (let i = 0; i < fishNum; i++) {
+    boids[i] = new Boid(0.88, 0.3);
     const boid = boids[i];
-    boid.position.x = Math.random() * 400 - 200;
-    boid.position.y = Math.random() * 400 - 200;
-    boid.position.z = Math.random() * 400 - 200;
+    boid.position.x = Math.random() * 400 - 200 + offset.x;
+    boid.position.y = Math.random() * 400 - 200 + offset.y;
+    boid.position.z = Math.random() * 400 - 200 + offset.z;
     boid.velocity.x = Math.random() * 2 - 1;
     boid.velocity.y = Math.random() * 2 - 1;
     boid.velocity.z = Math.random() * 2 - 1;
     boid.setAvoidWalls(true);
-    boid.setWorldSize(500, 500, 400);
-    fishes[i]=(<mesh material={material} geometry={geometry} key={i} position={[boid.position.x,boid.position.y,boid.position.z]} />);
+    // a bit wider on the plane to make them go away and come back
+    boid.setWorldSize(256, 256, 256);
+
+    fishes[i] = (
+      <mesh
+        material={material}
+        geometry={geometry}
+        key={i}
+        position={[boid.position.x, boid.position.y, boid.position.z]}
+      />
+    );
   }
-  useFrame(()=>{
-    
+  useFrame(() => {
     for (let i = 0; i < boids.length; i++) {
       const boid = boids[i];
       boid.run(boids);
-      console.log();
-      
-      
       const fish = groupRef.current.children[i];
-
       fish.position.copy(boids[i].position);
-
       fish.rotation.y = Math.atan2(-boid.velocity.z, boid.velocity.x);
       fish.rotation.z = Math.asin(boid.velocity.y / boid.velocity.length());
-      
     }
   });
   return <group ref={groupRef}>{fishes}</group>;
-  //return fishes;
-
-
-    //fishes[i] = new THREE.Mesh(geometry, material);
-
-    //scene.add(fishes[i]);
-  
 
   const data = useMemo(() => {
     return new Array(amount).fill().map((_, i) => ({
@@ -91,26 +88,26 @@ export function BestBoids({ fishNum = 100 }) {
   ));
 }
 function aFish() {
-function tick() {
-      for (let i = 0; i < boids.length; i++) {
-        const boid = boids[i];
-        boid.run(boids);
+  function tick() {
+    for (let i = 0; i < boids.length; i++) {
+      const boid = boids[i];
+      boid.run(boids);
 
-        const fish = fishes[i];
-        fish.position.copy(boids[i].position);
+      const fish = fishes[i];
+      fish.position.copy(boids[i].position);
 
-        fish.rotation.y = Math.atan2(-boid.velocity.z, boid.velocity.x);
-        fish.rotation.z = Math.asin(boid.velocity.y / boid.velocity.length());
-      }
-
-      // カメラコントローラーを更新
-      controls.update();
-
-      // レンダリング
-      renderer.render(scene, camera);
-
-      requestAnimationFrame(tick);
+      fish.rotation.y = Math.atan2(-boid.velocity.z, boid.velocity.x);
+      fish.rotation.z = Math.asin(boid.velocity.y / boid.velocity.length());
     }
+
+    // カメラコントローラーを更新
+    controls.update();
+
+    // レンダリング
+    renderer.render(scene, camera);
+
+    requestAnimationFrame(tick);
+  }
 }
 
 /**

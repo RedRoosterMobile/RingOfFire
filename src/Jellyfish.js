@@ -246,8 +246,8 @@ export default function Jellyfish() {
         //  <color attach="background" args={[0x191970]} />
       }}
     >
-      <color attach="background" args={[0xcccccc]} />
-      
+      <color attach="background" args={[0x191970]} />
+      <fogExp2 attach="fog" args={['#000080', 0.01]} />
       <group>
         <pointLight
           ref={pointLightRef}
@@ -260,7 +260,7 @@ export default function Jellyfish() {
           decay={200}
         />
         <spotLight
-          position={[0, 50, 0]}
+          position={[0, 150, 0]}
           castShadow
           color={0xffffff}
           angle={0.3}
@@ -268,9 +268,12 @@ export default function Jellyfish() {
           penumbra={0.7}
         />
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
-        <ambientLight ref={ambientRef} intensity={10.2} />
+        <ambientLight ref={ambientRef} intensity={0.2} />
         <Ground /> 
-       <BestBoids/>
+        <Shark position={[0, 0, 0]} />
+<MantaRay position={[10, 20, 0]} />
+<Terrain />
+       <BestBoids position={[100,200,0]}/>
         {isReady &&  <BetterBoids position={[-128, 0, -128]}/>}
         <OrbitControls />
       </group>
@@ -279,9 +282,7 @@ export default function Jellyfish() {
     </Canvas>
   );
 }
-{/* <Shark position={[0, 0, 0]} />
-<MantaRay position={[10, 20, 0]} />
-<Terrain /> */}
+
 // <FishSwarm position={[0,30,0]}/>
 // <MantaRay position={[10, 20, 0]} />
 // spotlight config https://threejs.org/examples/#webgl_lights_spotlight

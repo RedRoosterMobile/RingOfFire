@@ -28,7 +28,9 @@ export default class Boid {
         // 下の壁からの回避
         this.vector.set(
           this.position.x,
-          -this.worldSize.height,
+          //-this.worldSize.height,
+          // stop before hitting the ground..
+          -this.worldSize.height/10,
           this.position.z
         );
         this.vector = this.avoid(this.vector);
@@ -190,7 +192,7 @@ export default class Boid {
     this.acceleration = new THREE.Vector3();
     this.maxSpeed = maxSpeed || 4;
     this.maxSteerForce = maxSteerForce || 0.1;
-    this.neighborhoodRadius = 100;
+    this.neighborhoodRadius =  70;// 100
     this.worldSize = { width: 500, height: 500, depth: 500 };
     this.avoidWalls = false;
   }
