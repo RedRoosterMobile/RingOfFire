@@ -9,7 +9,7 @@ import {
   BackSide,
 } from 'three';
 
-export function Sky({
+export function PurpleSky({
   topColor = 0x11e8bb,
   bottomColor = 0x8200c9,
   offset = 0.5,

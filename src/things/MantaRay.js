@@ -5,16 +5,24 @@ license: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
 source: https://sketchfab.com/3d-models/low-poly-mantaray-62ccfb67f0d9476d8857fce3599ace04
 title: Low-Poly Mantaray
 */
-
+import * as THREE from 'three';
 import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import { MeshStandardMaterial } from 'three';
+import { useFrame,useLoader } from '@react-three/fiber';
+import { MeshStandardMaterial, Vector3 } from 'three';
 import { rgbTo01 } from '../helper';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 const CHILL_FACTOR = 1.3;
 const MODEL = '/models/manta_ray_bubble.glb';
+const PATH = '/paths/MantaBezier.obj';
 export function MantaRay(props) {
   const group = useRef();
+  const mantaMesh = useRef();
+  const mantaPathGeometry = useMemo(
+    () => useLoader(OBJLoader, PATH).children[0].geometry,
+    []
+  );
+
   const { nodes, materials, animations } = useGLTF(MODEL);
   animations[0].duration *= CHILL_FACTOR;
   for (let i = 0; i < animations[0].tracks.length; i++) {
@@ -23,9 +31,23 @@ export function MantaRay(props) {
     }
   }
   const { actions } = useAnimations(animations, group);
+  const pointsMaterial = new THREE.PointsMaterial({color: 0x00ff00, size: 10.125 });
+  const v3Array = [];
   useEffect(() => {
     const animationAction = actions['Swimming'];
     animationAction.play();
+
+    const points = new THREE.Points(mantaPathGeometry, new THREE.PointsMaterial({color: 0x00ff00, size: 0.125 }));
+    console.log(points);
+
+    const posArray = mantaPathGeometry.attributes.position.array;
+    
+    for (let i=0; i<posArray.length;i=i+3) {
+      v3Array.push(new THREE.Vector3(posArray[i+0],posArray[i+1],posArray[i+2]));
+    }
+    // to lookAt()
+    console.log(v3Array);
+   
   });
   const outlineMaterial = useMemo(() => {
     return materials.Rausku_outline;
@@ -36,10 +58,29 @@ export function MantaRay(props) {
     (state) =>
       material && (material.time = state.clock.getElapsedTime() * speed)
   );*/
+  let mantaPosIndex = 0;
+
+  let mantaPos = v3Array[mantaPosIndex] || new THREE.Vector3(0,0,0);
+  
+  useFrame((_, delta)=>{
+    if (mantaPos.equals(v3Array[mantaPosIndex] || mantaPosIndex==0))
+      mantaPosIndex++;
+    if (mantaPosIndex == v3Array.length) {
+      mantaPosIndex = 0;
+    }
+    
+    //mantaPos = v3Array[mantaPosIndex];
+    //console.log(mantaPos);
+    mantaPos.lerp(v3Array[mantaPosIndex],.1);
+    //mantaMesh.current.lookAt(mantaPos);
+    
+  });
+
   const justFish = false;
   return (
     <group ref={group} {...props} dispose={null}>
-      <group name="Sketchfab_model" scale={2} rotation={[-Math.PI / 2, 0, 0]}>
+      <points material={pointsMaterial} geometry={mantaPathGeometry}/>
+      <group name="Sketchfab_model" position={mantaPos} scale={2} rotation={[-Math.PI / 2, 0, 0]}>
         <group name="Root">
           <group name="Rausku_armature">
             <primitive object={nodes.Rausku_armature_rootJoint} />
@@ -51,7 +92,7 @@ export function MantaRay(props) {
                   material={materials.Rausku_texture}
                   skeleton={nodes.Rausku_mesh_0.skeleton}
                   castShadow
-                  
+                  ref={mantaMesh}
                   metalness={1}
                 />
                 <skinnedMesh

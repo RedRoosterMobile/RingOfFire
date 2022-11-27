@@ -47,7 +47,7 @@ void main() {
 }
 `;
 import glsl from 'babel-plugin-glsl/macro';
-import { Sky } from './Sky';
+import { PurpleSky } from './PurpleSky';
 
 const vertexShader = glsl`
 
@@ -328,7 +328,7 @@ export default function Jellyfish() {
         <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
         <BestBoids position={[0, 25, 0]} />
         <OrbitControls />
-        <Sky size={400} exponent={3}/>
+        <PurpleSky size={400} exponent={3} brightness={0.5}/>
       </group>
 
       <Stats />
