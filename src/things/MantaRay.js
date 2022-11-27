@@ -10,9 +10,10 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame,useLoader } from '@react-three/fiber';
 import { MeshStandardMaterial, Vector3 } from 'three';
-import { rgbTo01 } from '../helper';
+import { rgbTo01, getRandomFloat } from '../helper';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 const CHILL_FACTOR = 1.3;
+const SPEED = 1000;
 const MODEL = '/models/manta_ray_bubble.glb';
 const PATH = '/paths/MantaBezier.obj';
 export function MantaRay(props) {
@@ -22,23 +23,22 @@ export function MantaRay(props) {
     () => useLoader(OBJLoader, PATH).children[0].geometry,
     []
   );
-
+  
   const { nodes, materials, animations } = useGLTF(MODEL);
+  /*
   animations[0].duration *= CHILL_FACTOR;
   for (let i = 0; i < animations[0].tracks.length; i++) {
     for (let j = 0; j < animations[0].tracks[i].times.length; j++) {
       animations[0].tracks[i].times[j] *= CHILL_FACTOR;
     }
-  }
+  }*/
   const { actions } = useAnimations(animations, group);
   const pointsMaterial = new THREE.PointsMaterial({color: 0x00ff00, size: 10.125 });
   const v3Array = [];
   useEffect(() => {
+    group.current.updateMatrix();
     const animationAction = actions['Swimming'];
-    animationAction.play();
-
-    const points = new THREE.Points(mantaPathGeometry, new THREE.PointsMaterial({color: 0x00ff00, size: 0.125 }));
-    console.log(points);
+    animationAction.setEffectiveTimeScale(CHILL_FACTOR).play();
 
     const posArray = mantaPathGeometry.attributes.position.array;
     
@@ -52,34 +52,41 @@ export function MantaRay(props) {
   const outlineMaterial = useMemo(() => {
     return materials.Rausku_outline;
   });
-  /*
-  const speed = 1;
-  useFrame(
-    (state) =>
-      material && (material.time = state.clock.getElapsedTime() * speed)
-  );*/
+  const spline = useMemo(() => {
+    console.log(v3Array);
+    const curve = new THREE.CatmullRomCurve3(v3Array);
+    curve.curveType = "centripetal";
+    curve.closed = true;
+    return curve;
+  }, [v3Array]);
+
+  //const tubeGeom = new THREE.TubeBufferGeometry(spline, 250, 0.02, 10, true);
+  const posIdx = useRef(0);
+
   let mantaPosIndex = 0;
 
   let mantaPos = v3Array[mantaPosIndex] || new THREE.Vector3(0,0,0);
   
   useFrame((_, delta)=>{
-    if (mantaPos.equals(v3Array[mantaPosIndex] || mantaPosIndex==0))
-      mantaPosIndex++;
-    if (mantaPosIndex == v3Array.length) {
-      mantaPosIndex = 0;
-    }
-    
-    //mantaPos = v3Array[mantaPosIndex];
-    //console.log(mantaPos);
-    mantaPos.lerp(v3Array[mantaPosIndex],.1);
-    //mantaMesh.current.lookAt(mantaPos);
+    posIdx.current++;
+    if (posIdx.current > SPEED) posIdx.current = 0;
+    const pos = spline.getPoint(posIdx.current / SPEED);
+    const posnext = spline.getPoint((posIdx.current + 1) / SPEED);
+
+    group.current.position.x = pos.x;
+    group.current.position.y = pos.y;
+    group.current.position.z = pos.z;
+
+    group.current.lookAt(posnext);
+    // check it out man! https://codesandbox.io/s/animations-curve-path-forked-y5vyng
     
   });
-
+// 
   const justFish = false;
-  return (
+  return (<group>
+    <points material={pointsMaterial} geometry={mantaPathGeometry}/>
     <group ref={group} {...props} dispose={null}>
-      <points material={pointsMaterial} geometry={mantaPathGeometry}/>
+      
       <group name="Sketchfab_model" position={mantaPos} scale={2} rotation={[-Math.PI / 2, 0, 0]}>
         <group name="Root">
           <group name="Rausku_armature">
@@ -146,6 +153,7 @@ export function MantaRay(props) {
           </group>
         </group>
       </group>
+    </group>
     </group>
   );
 }
