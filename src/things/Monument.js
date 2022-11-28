@@ -56,6 +56,8 @@ export function AMonument(props) {
           color={rgbTo01(255 * 1, 215, 0)}
           roughness={0.3}
           metalness={1.0}
+          // sth with spripes
+          //roughnessMap=
         />
       </mesh>
     </group>

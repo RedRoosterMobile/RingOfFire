@@ -216,7 +216,7 @@ const Ground = () => {
     </mesh>
   );
 };
-
+// https://github.com/martinRenou/threejs-caustics 
 const DancingSpotlights = () => {
   // TODO:
   //

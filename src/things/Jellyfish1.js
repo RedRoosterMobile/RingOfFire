@@ -7,53 +7,100 @@ title: Crystal Jellyfish (Leptomedusae)
 //  npx gltfjsx crystal_jellyfish_leptomedusae.glb  
 https://github.com/pmndrs/gltfjsx
 */
-
-import React, { useRef, useEffect } from 'react';
+const SPEED = 10000;
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
+import { useFrame, useLoader } from '@react-three/fiber';
+import {
+  Vector3,
+  CatmullRomCurve3,
+  TubeBufferGeometry,
+} from 'three';
+import { getRandomFloat } from '../helper';
 
 export function Jellyfish1(props) {
   const group = useRef();
+  const spline = useMemo(() => {
+    const randomPoints = [];
+    for (let i = 0; i < 6; i++) {
+      randomPoints.push(
+        new Vector3(
+          getRandomFloat(-20, 20),
+          getRandomFloat(8, 20),
+          getRandomFloat(-20, 20)
+        )
+      );
+    }
+
+    const curve = new CatmullRomCurve3(randomPoints);
+    curve.curveType = 'centripetal';
+    curve.closed = true;
+    return curve;
+  }, []);
+  const tubeGeom = new TubeBufferGeometry(spline, 250, 0.02, 10, true);
+
+  const posIdx = useRef(0);
   const { nodes, materials, animations } = useGLTF(
     '/models/crystal_jellyfish_leptomedusae.glb'
   );
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
+    group.current.updateMatrix();
     const animationAction = actions['200'];
     animationAction.play();
   });
+  useFrame((_,delta) => {
+    posIdx.current++;
+    if (posIdx.current > SPEED) posIdx.current = 0;
+    const pos = spline.getPoint(posIdx.current / SPEED);
+    const posnext = spline.getPoint((posIdx.current + 1) / SPEED);
+    group.current.position.lerp(pos, delta);
+    /*group.current.position.x = pos.x;
+    group.current.position.y = pos.y;
+    group.current.position.z = pos.z;
+    */
+    //group.current.lookAt(posnext);
+  });
   return (
-    <group ref={group} {...props} dispose={null}>
-      <primitive object={nodes.GLTF_created_0_rootJoint} />
-      <skinnedMesh
-        enabled={true}
-        name="Object_7"
-        geometry={nodes.Object_7.geometry}
-        material={materials['Crystal-jelly_tentacle']}
-        material-color={'aquamarine'}
-        skeleton={nodes.Object_7.skeleton}
-        receiveShadow={false}
-      />
-      <skinnedMesh
-        name="Object_8"
-        enabled={true}
-        geometry={nodes.Object_8.geometry}
-        material={materials['Crystal-jelly_bell1']}
-        skeleton={nodes.Object_8.skeleton}
-        material-color={'hotpink'}
-        receiveShadow={false}
-      />
-      <skinnedMesh
-        enabled={true}
-        name="Object_9"
-        geometry={nodes.Object_9.geometry}
-        material={materials['Crystal-jelly_bell2']}
-        material-color={[2, 1.75, 0]}
-        emissive={[2, 1.75, 0]}
-        emissiveIntensity={100.1}
-        toneMapped={false}
-        skeleton={nodes.Object_9.skeleton}
-        receiveShadow={false}
-      />
+    <group>
+      <mesh geometry={tubeGeom}>
+        <meshBasicMaterial color={'red'} />
+      </mesh>
+      <group ref={group} {...props} dispose={null}>
+        <group rotation={[0, Math.PI / 4, 0]}>
+          <primitive object={nodes.GLTF_created_0_rootJoint} />
+          <skinnedMesh
+            enabled={true}
+            name="Object_7"
+            geometry={nodes.Object_7.geometry}
+            material={materials['Crystal-jelly_tentacle']}
+            material-color={'aquamarine'}
+            skeleton={nodes.Object_7.skeleton}
+            receiveShadow={false}
+          />
+          <skinnedMesh
+            name="Object_8"
+            enabled={true}
+            geometry={nodes.Object_8.geometry}
+            material={materials['Crystal-jelly_bell1']}
+            skeleton={nodes.Object_8.skeleton}
+            material-color={'hotpink'}
+            receiveShadow={false}
+          />
+          <skinnedMesh
+            enabled={true}
+            name="Object_9"
+            geometry={nodes.Object_9.geometry}
+            material={materials['Crystal-jelly_bell2']}
+            material-color={[2, 1.75, 0]}
+            emissive={[2, 1.75, 0]}
+            emissiveIntensity={100.1}
+            toneMapped={false}
+            skeleton={nodes.Object_9.skeleton}
+            receiveShadow={false}
+          />
+        </group>
+      </group>
     </group>
   );
 }
