@@ -107,7 +107,7 @@ const FbmMaterial = shaderMaterial(
         col=mix(col,vec3(0.9,0.6,0.3),clamp(pow(fa2*1.5,20.)*0.7,0.,1.));
         
         //black
-      col=mix(col,vec3(0.),clamp(pow(fb1*1.6,1.)*0.8,0.,1.));
+        col=mix(col,vec3(0.),clamp(pow(fb1*1.6,1.)*0.8,0.,1.));
         
         //white
         col=mix(col,vec3(0.99),clamp(pow(fb2*1.4-0.05,20.),0.,1.));
