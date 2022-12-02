@@ -48,6 +48,7 @@ void main() {
 `;
 import glsl from 'babel-plugin-glsl/macro';
 import { PurpleSky } from './PurpleSky';
+import { Forest } from './things/Forest';
 
 const vertexShader = glsl`
 
@@ -97,13 +98,12 @@ function R3fEffects() {
         <Sun ref={sunRef} />
         {sunRef.current && (
           <EffectComposer multisampling={0}>
-         
-             <Bloom
-          blendFunction={BlendFunction.ADD}
-          intensity={20}
-          luminanceThreshold={0.9}
-          luminanceSmoothing={1.3}
-        />
+            <Bloom
+              blendFunction={BlendFunction.ADD}
+              intensity={20}
+              luminanceThreshold={0.9}
+              luminanceSmoothing={1.3}
+            />
           </EffectComposer>
         )}
       </Suspense>
@@ -216,7 +216,7 @@ const Ground = () => {
     </mesh>
   );
 };
-// https://github.com/martinRenou/threejs-caustics 
+// https://github.com/martinRenou/threejs-caustics
 const DancingSpotlights = () => {
   // TODO:
   //
@@ -322,20 +322,23 @@ export default function Jellyfish() {
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
         <ambientLight ref={ambientRef} intensity={0.2} />
         <Ground />
-        <Shark position={[0, 0, 0]} />
-        <MantaRay position={[10, 20, 0]} />
-        <Terrain />
-        <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
-        <BestBoids position={[0, 25, 0]} />
-        <OrbitControls />
-        <PurpleSky size={400} exponent={3} brightness={0.5}/>
+        <Forest radius={20} amount={200} />
       </group>
-
+      <OrbitControls />
       <Stats />
     </Canvas>
   );
 }
+/*
 
+   <Shark position={[0, 0, 0]} />
+        <MantaRay position={[10, 20, 0]} />
+        <Terrain />
+        <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
+        <BestBoids position={[0, 25, 0]} />
+        
+        <PurpleSky size={400} exponent={3} brightness={0.5}/>
+*/
 // <FishSwarm position={[0,30,0]}/>
 // <MantaRay position={[10, 20, 0]} />
 // spotlight config https://threejs.org/examples/#webgl_lights_spotlight
