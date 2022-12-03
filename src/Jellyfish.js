@@ -20,7 +20,7 @@ import {
   Stars,
   Edges,
   Instances,
-  Instance,
+  PerformanceMonitor,
 } from '@react-three/drei';
 import Glitch from './post/Glitch';
 import { WaterEffect } from './r3f-effects/WaterEffect';
@@ -49,6 +49,8 @@ void main() {
 import glsl from 'babel-plugin-glsl/macro';
 import { PurpleSky } from './PurpleSky';
 import { Forest } from './things/Forest';
+import InstancesExample from './things/InstancesExample';
+import ForestInstances from './things/ForestInstances';
 
 const vertexShader = glsl`
 
@@ -246,6 +248,7 @@ export default function Jellyfish() {
 
   const ambientRef = useRef();
   const pointLightRef = useRef();
+  const treeGeometry = new THREE.CylinderGeometry(0.5, 0.5, 5, 8);
 
   // https://docs.pmnd.rs/react-three-fiber/advanced/scaling-performance
   return (
@@ -298,6 +301,7 @@ export default function Jellyfish() {
         //  <color attach="background" args={[0x191970]} />
       }}
     >
+      <Stats/>
       <color attach="background" args={[0x191970]} />
       <fogExp2 attach="fog" args={['#000080', 0.01]} />
       <group>
@@ -322,15 +326,16 @@ export default function Jellyfish() {
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
         <ambientLight ref={ambientRef} intensity={0.2} />
         <Ground />
-        <Forest radius={20} amount={200} />
+       
+        <ForestInstances />
       </group>
       <OrbitControls />
-      <Stats />
+      
     </Canvas>
   );
 }
 /*
-
+ <Forest radius={20} amount={200} />
    <Shark position={[0, 0, 0]} />
         <MantaRay position={[10, 20, 0]} />
         <Terrain />
