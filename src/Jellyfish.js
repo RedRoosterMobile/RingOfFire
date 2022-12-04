@@ -98,16 +98,20 @@ function R3fEffects() {
     factor: { value: 1.0, min: 0.0, max: 2.0 },
   });
   // <WaterEffect {...waterProps} />
+  // <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
 
   return (
     <>
       <EffectComposer multisampling={8}>
         <WaterEffect {...waterProps} />
+        
         <Bloom
+          mipmapBlur
           intensity={1}
           luminanceThreshold={1.0}
           luminanceSmoothing={1.3}
         />
+        <Vignette darkness={0.5} />
       </EffectComposer>
     </>
   );
@@ -334,7 +338,7 @@ export default function Jellyfish() {
         <Ground />
         <Jellyfish1 enabled={true} />
         <ForestInstances />
-        <R3fEffects />
+       
       </group>
       <OrbitControls />
     </Canvas>

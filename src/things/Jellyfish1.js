@@ -75,7 +75,9 @@ export function Jellyfish1(props) {
             name="Object_7"
             geometry={nodes.Object_7.geometry}
             material={materials['Crystal-jelly_tentacle']}
-            material-color={'aquamarine'}
+            //material-color={'aquamarine'}
+            material-color={[255, 172, 28].map((el) => (el / 255) * 2)}
+            material-toneMapped={false}
             skeleton={nodes.Object_7.skeleton}
             receiveShadow={false}
           />
@@ -100,7 +102,8 @@ export function Jellyfish1(props) {
             receiveShadow={false}
           >
             <meshStandardMaterial
-              color={[255, 172, 28 ].map((el) => el / 255 *10)}
+              // brightorange
+              color={[255, 172, 28].map((el) => (el / 255) * 2)}
               side={DoubleSide}
               toneMapped={false}
             />
