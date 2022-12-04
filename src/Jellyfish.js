@@ -22,6 +22,8 @@ import {
   Instances,
   PerformanceMonitor,
 } from '@react-three/drei';
+
+import { Perf } from 'r3f-perf';
 import Glitch from './post/Glitch';
 import { WaterEffect } from './r3f-effects/WaterEffect';
 import Tint from './failed_attempts_graveyard/Tint';
@@ -91,28 +93,32 @@ const Sun = forwardRef(function Sun(props, forwardRef) {
 function R3fEffects() {
   let weights = [5.1, 0.1, 1.9];
   // <MyCustomEffect param2={0.1} weights={weights}></MyCustomEffect>
-  const sunRef = useRef();
+  const waterProps = useControls('Water Effect', {
+    frequency: { value: 6.0, min: 0.0, max: 12.0 },
+    factor: { value: 1.0, min: 0.0, max: 2.0 },
+  });
+  // <WaterEffect {...waterProps} />
 
-  const distance = 40;
   return (
     <>
-      <Suspense>
-        <Sun ref={sunRef} />
-        {sunRef.current && (
-          <EffectComposer multisampling={0}>
-            <Bloom
+      <EffectComposer multisampling={8}>
+        <WaterEffect {...waterProps} />
+        <Bloom
+          intensity={1}
+          luminanceThreshold={1.0}
+          luminanceSmoothing={1.3}
+        />
+      </EffectComposer>
+    </>
+  );
+}
+/*
+<Bloom
               blendFunction={BlendFunction.ADD}
               intensity={20}
               luminanceThreshold={0.9}
               luminanceSmoothing={1.3}
             />
-          </EffectComposer>
-        )}
-      </Suspense>
-    </>
-  );
-}
-/*
  <Bloom
           blendFunction={BlendFunction.ADD}
           intensity={20}
@@ -301,7 +307,7 @@ export default function Jellyfish() {
         //  <color attach="background" args={[0x191970]} />
       }}
     >
-      <Stats/>
+      <Perf position="top-left" />
       <color attach="background" args={[0x191970]} />
       <fogExp2 attach="fog" args={['#000080', 0.01]} />
       <group>
@@ -326,11 +332,11 @@ export default function Jellyfish() {
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
         <ambientLight ref={ambientRef} intensity={0.2} />
         <Ground />
-       
+        <Jellyfish1 enabled={true} />
         <ForestInstances />
+        <R3fEffects />
       </group>
       <OrbitControls />
-      
     </Canvas>
   );
 }

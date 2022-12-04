@@ -15,6 +15,7 @@ import {
   Vector3,
   CatmullRomCurve3,
   TubeBufferGeometry,
+  DoubleSide,
 } from 'three';
 import { getRandomFloat } from '../helper';
 
@@ -49,7 +50,7 @@ export function Jellyfish1(props) {
     const animationAction = actions['200'];
     animationAction.play();
   });
-  useFrame((_,delta) => {
+  useFrame((_, delta) => {
     posIdx.current++;
     if (posIdx.current > SPEED) posIdx.current = 0;
     const pos = spline.getPoint(posIdx.current / SPEED);
@@ -91,18 +92,36 @@ export function Jellyfish1(props) {
             enabled={true}
             name="Object_9"
             geometry={nodes.Object_9.geometry}
-            material={materials['Crystal-jelly_bell2']}
-            material-color={[2, 1.75, 0]}
-            emissive={[2, 1.75, 0]}
-            emissiveIntensity={100.1}
+            //material={materials['Crystal-jelly_bell2']}
+            //material-color={[2, 1.75, 2*20]}
+
             toneMapped={false}
             skeleton={nodes.Object_9.skeleton}
             receiveShadow={false}
-          />
+          >
+            <meshStandardMaterial
+              color={[255, 172, 28 ].map((el) => el / 255 *10)}
+              side={DoubleSide}
+              toneMapped={false}
+            />
+          </skinnedMesh>
         </group>
       </group>
     </group>
   );
 }
-
+/**
+ <skinnedMesh
+            enabled={true}
+            name="Object_9"
+            geometry={nodes.Object_9.geometry}
+            material={materials['Crystal-jelly_bell2']}
+            material-color={[2, 1.75, 2*20]}
+            emissive="orange"
+            emissiveIntensity={100.1}
+            toneMapped={false}
+            skeleton={nodes.Object_9.skeleton}
+            receiveShadow={false}
+          />
+ */
 useGLTF.preload('/models/crystal_jellyfish_leptomedusae.glb');

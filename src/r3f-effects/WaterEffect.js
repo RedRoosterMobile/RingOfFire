@@ -21,6 +21,22 @@ const fragmentShader = glsl`
 // https://codesandbox.io/s/github/pmndrs/threejs-journey/tree/main/examples/extra/Portal?file=/src/App.jsx:425-449
 // https://github.com/pmndrs/postprocessing/blob/5ef13d07264edccdb6ac7880fe1dc56ef64dffe6/src/effects/glsl/bokeh.frag
 // https://codesandbox.io/s/post-processing-with-r3f-forked-zw8rwv?file=/src/App.tsx
+uniform float frequency;
+uniform float factor;
+//uniform float offset;
+
+void mainUv(inout vec2 uv) {
+  //float factor = 1.0; // <-1.5
+  vec2 uv1 = uv;
+  //float frequency = 6.0;
+  float amplitude = 0.015 * factor;
+  float x = uv1.y * frequency + time * .7;
+  float y = uv1.x * frequency + time * .3;
+  uv1.x += cos(x+y) * amplitude * cos(y);
+  uv1.y += sin(x-y) * amplitude * cos(y);
+
+  uv = uv1;
+}
 
 void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
 //void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
@@ -31,9 +47,11 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     float viewZ = perspectiveDepthToViewZ(depth, cameraNear, cameraFar);
 		float linearDepth = viewZToOrthographicDepth(viewZ, cameraNear, cameraFar);
     */
-    
-    //vec2 vUv = uv.xy;
-    float factor=1.0; // <-1.5
+
+    // note: there is a difference between vUv and uv..
+
+    /*
+    float factor = 1.0; // <-1.5
     vec2 uv1 = vUv;
     float frequency = 6.0;
     float amplitude = 0.015 * factor;
@@ -44,9 +62,11 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     // https://github.com/aguilarmiqueas/car-game/blob/62872b759b9a28c75860347db311561b9a790bce/src/CustomPass.js
     // secrect sauce: inputBuffer.....man this took me hours to find
     vec4 rgba = texture2D(inputBuffer, uv1);
-    outputColor= rgba;
-    //outputColor = inputColor;
+    outputColor = inputColor;rgba;
+    */
+    outputColor = inputColor;
 }`;
+
 const vertexShader = glsl`
 varying vec3 vNormal;
 /*
@@ -62,41 +82,45 @@ void mainSupport() {
 
 void mainSupport(const in vec2 uv) {
 		vUv = uv * vec2(aspect, 1.0) * scale;
-	#endif
-
 }
 `;
 
 let _blendFunction;
+let _frequency;
+let _factor;
 //let _time = 0;
 
 // Effect implementation
 class WaterEffectImpl extends Effect {
-  constructor({} = {}) {
+  constructor(frequency, factor) {
     super('WaterEffect', fragmentShader, {
       _blendFunction,
-      /*
       uniforms: new Map([
-        //['time', new Uniform(_time)]
+        ['frequency', new Uniform(frequency)],
+        ['factor', new Uniform(factor)],
+        //['offset', new Uniform(0)],
       ]),
-      */
       //vertexShader: vertexShader
     });
   }
   // (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
-    /*
+
+  // called on each frame
   update(renderer, inputBuffer, deltaTime) {
-    //_time += deltaTime;
+    this.uniforms.get('frequency').value = _frequency;
+    this.uniforms.get('factor').value = _factor;
     //this.uniforms.set('time', { value: _time });
-  }*/
+  }
 }
 
 // Effect component
 export const WaterEffect = forwardRef(
-  ({ blendFunction = BlendFunction.NORMAL }, ref) => {
+  ({ blendFunction = BlendFunction.NORMAL, frequency = 6.0, factor = 1.0 }, ref) => {
     _blendFunction = blendFunction;
+    _frequency = frequency;
+    _factor = factor;
     const effect = useMemo(() => {
-      return new WaterEffectImpl();
+      return new WaterEffectImpl(frequency,factor);
     }, []);
     return <primitive ref={ref} object={effect} />;
   }
