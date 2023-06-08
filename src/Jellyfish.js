@@ -336,6 +336,14 @@ export default function Jellyfish() {
         <directionalLight position={[0, 40, 0]} intensity={0.1} decay={30} />
         <ambientLight ref={ambientRef} intensity={0.2} />
         <Ground />
+        <FishSwarm position={[0,30,0]}/>
+        <Shark position={[0, 0, 0]} />
+        <MantaRay position={[10, 20, 0]} />
+        <Terrain />
+        <Jellyfish1 enabled={true} position={[-5, 15, -10]} />
+        <BestBoids position={[0, 25, 0]} />
+        
+        <PurpleSky size={400} exponent={3} brightness={0.5}/>
         <Jellyfish1 enabled={true} />
         <ForestInstances />
        
