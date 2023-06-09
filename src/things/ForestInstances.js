@@ -55,8 +55,8 @@ export default function ForestInstances({
         //vec2 transformedRotated = rotate(transformed.xz, sin(uTime * timeFrequency + transformed.z * elevationOffsetMultiplier) * log(abs(transformed.z) + 1.0) * angleMultiplier);
         //transformed.xz = transformedRotated;
         transformed.y =  transformed.y + sin(uTime/300.)*1.5;
-      `);
-
+      `
+      );
     },
   });
   console.log(treeMatrerial);
@@ -101,7 +101,6 @@ export default function ForestInstances({
 
       temp.updateMatrix();
       ref.current.setMatrixAt(i, temp.matrix);
-      
     }
     // Update the instance
     ref.current.instanceMatrix.needsUpdate = true;

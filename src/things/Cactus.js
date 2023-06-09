@@ -60,33 +60,33 @@ export function WobbleMesh(props) {
             shader.vertexShader = shader.vertexShader.replace(
               '#include <common>',
               `
-          #include <common>
-          uniform float uTime;
+              #include <common>
+              uniform float uTime;
 
-          vec2 rotate(vec2 v, float a) {
-            float s = sin(a);
-            float c = cos(a);
-            mat2 m = mat2(c, -s, s, c);
-            return m * v;
-          }
-        `
+              vec2 rotate(vec2 v, float a) {
+                float s = sin(a);
+                float c = cos(a);
+                mat2 m = mat2(c, -s, s, c);
+                return m * v;
+              }
+              `
             );
 
             shader.vertexShader = shader.vertexShader.replace(
               '#include <begin_vertex>',
               `
-          #include <begin_vertex>
-          float angleMultiplier = 0.25;
-          //float timeFrequency = 0.002;
-          float timeFrequency = ${parseFloat(timeFrequency).toFixed(5)};
-          //float elevationOffsetMultiplier = 3.0;
-          float elevationOffsetMultiplier = ${parseFloat(
-            elevationOffsetMultiplier
-          ).toFixed(1)};
+              #include <begin_vertex>
+              float angleMultiplier = 0.25;
+              //float timeFrequency = 0.002;
+              float timeFrequency = ${parseFloat(timeFrequency).toFixed(5)};
+              //float elevationOffsetMultiplier = 3.0;
+              float elevationOffsetMultiplier = ${parseFloat(
+                elevationOffsetMultiplier
+              ).toFixed(1)};
 
-          vec2 transformedRotated = rotate(transformed.xz, sin(uTime * timeFrequency + transformed.z * elevationOffsetMultiplier) * log(abs(transformed.z) + 1.0) * angleMultiplier);
-          transformed.xz = transformedRotated;
-        `
+              vec2 transformedRotated = rotate(transformed.xz, sin(uTime * timeFrequency + transformed.z * elevationOffsetMultiplier) * log(abs(transformed.z) + 1.0) * angleMultiplier);
+              transformed.xz = transformedRotated;
+            `
             );
           }}
           color="green"
