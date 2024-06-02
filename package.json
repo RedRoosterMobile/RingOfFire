@@ -6,10 +6,10 @@
   "main": "src/index.js",
   "dependencies": {
     "@babel/core": "7.14.0",
-    "@react-spring/three": "^9.1.1",
-    "@react-three/drei": "9.42.2",
-    "@react-three/fiber": "8.9.1",
-    "@react-three/postprocessing": "^2.7.0",
+    "@react-spring/three": "^9.7.3",
+    "@react-three/drei": "9.106.0",
+    "@react-three/fiber": "8.16.7",
+    "@react-three/postprocessing": "^2.9.4",
     "@types/three": "0.141.0",
     "babel-plugin-glsl": "1.0.0",
     "glsl-noise": "0.0.0",
@@ -23,7 +23,7 @@
     "react-scripts": "5.0.1",
     "react-spring": "^9.1.1",
     "short-uuid": "4.2.0",
-    "three": "0.141.0",
+    "three": "0.143.0",
     "uuid": "^9.0.0",
     "v8": "0.1.0",
     "worker-loader": "^3.0.8"

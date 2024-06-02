@@ -14,7 +14,7 @@ export default function Canvas() {
 
     // レンダラーを作成
     const renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio(window.devicePixelRatio);
+    //renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(width, hight);
 
     // レンダラー：シャドウを有効にする
@@ -178,7 +178,7 @@ export default function Canvas() {
       const height = window.innerHeight;
 
       // レンダラーのサイズを変更
-      renderer.setPixelRatio(window.devicePixelRatio);
+      //renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
 
       // カメラのアスペクト比を変更

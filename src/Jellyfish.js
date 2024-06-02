@@ -266,7 +266,8 @@ export default function Jellyfish() {
       // Only render on changes and movement
       //frameloop="demand"
       ref={canvasRef}
-      dpr={[1, 2]}
+      // dpr={[1, 2]}
+      drp={1}
       shadows={{ type: THREE.PCFSoftShadowMap }}
       camera={{ fov: 88, position: [0, 15, 0] }}
       onCreated={({ gl, scene, camera, size }) => {
@@ -345,8 +346,8 @@ export default function Jellyfish() {
         
         <PurpleSky size={400} exponent={3} brightness={0.5}/>
         <Jellyfish1 enabled={true} />
-        <ForestInstances />
-       
+        {/* <ForestInstances /> */}
+        <R3fEffects/>
       </group>
       <OrbitControls />
     </Canvas>
